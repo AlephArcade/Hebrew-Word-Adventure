@@ -822,7 +822,7 @@ function renderGameScreen() {
           </div>
         ${instructionsHTML}
         
-        <div class="letter-grid ${gameState.level === 4 ? 'five-letter' : ''}" id="letter-grid">
+         <div class="letter-grid ${gameState.level >= 5 ? 'six-letter' : (gameState.level >= 4 ? 'five-letter' : '')}" id="letter-grid">
           ${letterTilesHTML}
         </div>
         
