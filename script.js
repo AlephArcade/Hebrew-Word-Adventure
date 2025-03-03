@@ -558,33 +558,40 @@ function renderGame() {
     }
   }
 
-    function startGame() {
-      gameState = {
-        active: true,
-        level: 1,
-        currentWord: null,
-        shuffledLetters: [],
-        selectedLetters: [],
-        score: 0,
-        streak: 0,
-        bonusActive: false,
-        hintsRemaining: 15,
-        completed: false,
-        animatingCorrect: false,
-        wordsCompleted: 0,
-        // Add these new properties
-        completedWords: {
-          2: [],
-          3: [],
-          4: [],
-          5: [],
-          6: []
-        },
-        currentLevelProgress: 0
-      };
-      
-      setupWord();
+   function startGame() {
+  gameState = {
+    active: true,
+    level: 1,
+    currentWord: null,
+    shuffledLetters: [],
+    selectedLetters: [],
+    score: 0,
+    streak: 0,
+    bonusActive: false,
+    hintsRemaining: 15,
+    completed: false,
+    animatingCorrect: false,
+    wordsCompleted: 0,
+    // Add these new properties
+    completedWords: {
+      2: [],
+      3: [],
+      4: [],
+      5: [],
+      6: []
+    },
+    currentLevelProgress: 0,
+    // Add these bonus round properties
+    inBonusRound: false,
+    bonusTimeRemaining: 0,
+    bonusReward: {
+      extraHints: 0,
+      scoreMultiplier: 1
     }
+  };
+  
+  setupWord();
+}
     function showMessage(text) {
       const messageElement = document.querySelector('.message');
       if (messageElement) {
