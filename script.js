@@ -46,7 +46,423 @@
         { hebrew: 'מוזיקה', transliteration: 'muzika', meaning: 'music' },
       ]
     };
+    // Add this to your existing data in script.js
 
+// Hebrew letter + nikud combinations for bonus rounds
+const nikudChallenges = [
+  // Level 1 (easy)
+  [
+    { letter: 'אָ', options: ['a', 'o', 'i', 'e'], correct: 'a', sound: 'kamatz', transliteration: 'a as in "father"' },
+    { letter: 'בֵּ', options: ['ve', 'be', 'bi', 'ba'], correct: 'be', sound: 'tzere', transliteration: 'e as in "they"' },
+    { letter: 'גִּ', options: ['gi', 'ga', 'go', 'gu'], correct: 'gi', sound: 'chirik', transliteration: 'i as in "machine"' }
+  ],
+  // Level 2 (medium)
+  [
+    { letter: 'דֹּ', options: ['do', 'da', 'du', 'di'], correct: 'do', sound: 'cholam', transliteration: 'o as in "go"' },
+    { letter: 'הֻ', options: ['hu', 'hi', 'he', 'ho'], correct: 'hu', sound: 'kubutz', transliteration: 'u as in "flute"' },
+    { letter: 'זְ', options: ['z', 'ze', 'zi', 'zo'], correct: 'z', sound: 'shva', transliteration: 'silent or slight "e"' }
+  ],
+  // Level 3 (harder)
+  [
+    { letter: 'חַ', options: ['cha', 'chi', 'chu', 'che'], correct: 'cha', sound: 'patach', transliteration: 'a as in "father"' },
+    { letter: 'טוּ', options: ['tu', 'ti', 'te', 'to'], correct: 'tu', sound: 'shuruk', transliteration: 'u as in "flute"' },
+    { letter: 'יֶ', options: ['ye', 'ya', 'yo', 'yu'], correct: 'ye', sound: 'segol', transliteration: 'e as in "set"' }
+  ],
+  // Level 4 (advanced)
+  [
+    { letter: 'כַּ', options: ['ka', 'ke', 'ki', 'ku'], correct: 'ka', sound: 'patach', transliteration: 'a as in "father"' },
+    { letter: 'לֹ', options: ['lo', 'la', 'li', 'lu'], correct: 'lo', sound: 'cholam', transliteration: 'o as in "go"' },
+    { letter: 'נוֹ', options: ['no', 'na', 'ni', 'nu'], correct: 'no', sound: 'cholam malei', transliteration: 'o as in "go"' }
+  ]
+];
+
+// Add to gameState initialization in startGame function
+function startGame() {
+  gameState = {
+    active: true,
+    level: 1,
+    currentWord: null,
+    shuffledLetters: [],
+    selectedLetters: [],
+    score: 0,
+    streak: 0,
+    bonusActive: false,
+    hintsRemaining: 15,
+    completed: false,
+    animatingCorrect: false,
+    wordsCompleted: 0,
+    completedWords: {
+      2: [],
+      3: [],
+      4: [],
+      5: [],
+      6: []
+    },
+    currentLevelProgress: 0,
+    // Add these new properties for bonus rounds
+    inBonusRound: false,
+    bonusTimeRemaining: 0,
+    bonusReward: {
+      extraHints: 0,
+      scoreMultiplier: 1
+    }
+  };
+  
+  setupWord();
+}
+
+// Modify the checkAnswer function to trigger bonus round when completing a level
+function checkAnswer() {
+  // Build the word from selected letters
+  const selectedWord = gameState.selectedLetters.map(idx => gameState.shuffledLetters[idx]).join('');
+  
+  // Check if correct
+  if (selectedWord === gameState.currentWord.hebrew) {
+    // Mark as animating to prevent further selection
+    gameState.animatingCorrect = true;
+    gameState.wordsCompleted++;
+    
+    // Add to completed words
+    const wordLength = getWordLengthForLevel(gameState.level);
+    gameState.completedWords[wordLength].push(gameState.currentWord.hebrew);
+    
+    // Update level progress
+    gameState.currentLevelProgress = 
+      (gameState.completedWords[wordLength].length / wordBanks[wordLength].length) * 100;
+    
+    // Show complete word in slots with animation
+    showCorrectAnimation();
+    
+    // Calculate points with bonus if streak is active
+    let pointsEarned = wordLength * 10;
+    
+    // Apply bonus for streaks of 3 or more
+    if (gameState.bonusActive) {
+      pointsEarned = Math.round(pointsEarned * 1.5); // 50% bonus
+    }
+    
+    gameState.score += pointsEarned;
+    gameState.streak += 1;
+    
+    // Update bonus status after increasing streak
+    gameState.bonusActive = gameState.streak >= 3;
+    
+    // Show appropriate message
+    if (gameState.bonusActive) {
+      showMessage(`🔥 AWESOME! +${pointsEarned} points with streak bonus! 🔥`);
+    } else {
+      showMessage(`AWESOME! +${pointsEarned} points!`);
+    }
+    
+    // Create celebration effect
+    createConfetti();
+    
+    // Check for level completion or next word after animation completes
+    setTimeout(() => {
+  // Check if we've completed all words at this level
+  if (gameState.completedWords[wordLength].length === wordBanks[wordLength].length) {
+    if (gameState.level < 4) {
+      // Instead of immediately going to next level, start a bonus round
+      startBonusRound();
+    } else {
+      // Game complete - all levels finished
+      gameState.completed = true;
+    }
+  } else {
+    // If not completed level, set up next word
+    if (!gameState.completed) {
+      setupWord();
+    } else {
+      renderGame(); // Show completion screen
+    }
+  }
+}, 2000);
+
+  } else {
+    // Incorrect - same as before
+    showMessage('Try again!');
+    highlightWrongSequence();
+    
+    // Reset streak on error
+    gameState.streak = 0;
+    gameState.bonusActive = false;
+    
+    // Reset selection after a delay
+    setTimeout(() => {
+      gameState.selectedLetters = [];
+      renderGame();
+    }, 1000);
+  }
+}
+
+// New function to start the bonus round
+function startBonusRound() {
+  gameState.inBonusRound = true;
+  gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
+  
+  // Choose a random nikud challenge based on current level
+  const levelChallenges = nikudChallenges[gameState.level - 1];
+  const randomIndex = Math.floor(Math.random() * levelChallenges.length);
+  gameState.currentBonusChallenge = levelChallenges[randomIndex];
+  
+  // Start the timer
+  gameState.bonusTimer = setInterval(() => {
+    gameState.bonusTimeRemaining--;
+    if (gameState.bonusTimeRemaining <= 0) {
+      clearInterval(gameState.bonusTimer);
+      endBonusRound(false); // Timeout
+    }
+    renderGame();
+  }, 1000);
+  
+  renderGame();
+}
+
+// Handle bonus round answer selection
+function handleBonusSelection(selected) {
+  clearInterval(gameState.bonusTimer); // Stop the timer
+  
+  const isCorrect = selected === gameState.currentBonusChallenge.correct;
+  
+  if (isCorrect) {
+    // Apply rewards
+    gameState.bonusReward.extraHints += 3;
+    gameState.hintsRemaining += 3;
+    gameState.score += 30;
+    
+    showMessage('CORRECT! +30 points and 3 bonus hints!');
+    createConfetti();
+  } else {
+    showMessage('Not quite right! Let\'s continue to the next level.');
+  }
+  
+  setTimeout(() => {
+    endBonusRound(isCorrect);
+  }, 1500);
+}
+
+// End the bonus round and move to the next level
+function endBonusRound(wasSuccessful) {
+  gameState.inBonusRound = false;
+  clearInterval(gameState.bonusTimer);
+  
+  // Move to next level
+  gameState.level += 1;
+  gameState.currentLevelProgress = 0;
+  showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
+  
+  // Set up new word for the next level
+  setupWord();
+}
+// New function to start the bonus round
+function startBonusRound() {
+  gameState.inBonusRound = true;
+  gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
+  
+  // Choose a random nikud challenge based on current level
+  const levelChallenges = nikudChallenges[gameState.level - 1];
+  const randomIndex = Math.floor(Math.random() * levelChallenges.length);
+  gameState.currentBonusChallenge = levelChallenges[randomIndex];
+  
+  // Start the timer
+  gameState.bonusTimer = setInterval(() => {
+    gameState.bonusTimeRemaining--;
+    if (gameState.bonusTimeRemaining <= 0) {
+      clearInterval(gameState.bonusTimer);
+      endBonusRound(false); // Timeout
+    }
+    renderGame();
+  }, 1000);
+  
+  renderGame();
+}
+
+// Handle bonus round answer selection
+function handleBonusSelection(selected) {
+  clearInterval(gameState.bonusTimer); // Stop the timer
+  
+  const isCorrect = selected === gameState.currentBonusChallenge.correct;
+  
+  if (isCorrect) {
+    // Apply rewards
+    gameState.bonusReward.extraHints += 3;
+    gameState.hintsRemaining += 3;
+    gameState.score += 30;
+    
+    showMessage('CORRECT! +30 points and 3 bonus hints!');
+    createConfetti();
+  } else {
+    showMessage('Not quite right! Let\'s continue to the next level.');
+  }
+  
+  setTimeout(() => {
+    endBonusRound(isCorrect);
+  }, 1500);
+}
+
+// End the bonus round and move to the next level
+function endBonusRound(wasSuccessful) {
+  gameState.inBonusRound = false;
+  clearInterval(gameState.bonusTimer);
+  
+  // Move to next level
+  gameState.level += 1;
+  gameState.currentLevelProgress = 0;
+  showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
+  
+  // Set up new word for the next level
+  setupWord();
+}
+
+// New function to render the bonus round
+function renderBonusRound() {
+  const challenge = gameState.currentBonusChallenge;
+  
+  // Create options buttons HTML
+  let optionsHTML = '';
+  challenge.options.forEach(option => {
+    optionsHTML += `
+      <button class="bonus-option" data-option="${option}">
+        ${option}
+      </button>
+    `;
+  });
+  
+  gameContainer.innerHTML = `
+    <div class="bonus-container">
+      <div class="bonus-header">
+        <h2>BONUS ROUND!</h2>
+        <div class="bonus-timer">
+          <svg viewBox="0 0 36 36">
+            <path d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="#FFF8E1"
+              stroke-width="1"
+              stroke-dasharray="100, 100"
+            />
+            <path d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="#FFEB3B"
+              stroke-width="2"
+              stroke-dasharray="${gameState.bonusTimeRemaining * 10}, 100"
+            />
+          </svg>
+          <div class="time-display">${gameState.bonusTimeRemaining}</div>
+        </div>
+      </div>
+      
+      <div class="bonus-instruction">
+        Select the correct pronunciation of this Hebrew letter
+      </div>
+      
+      <div class="bonus-nikud">
+        ${challenge.letter}
+      </div>
+      
+      <div class="bonus-sound-info">
+        <span class="sound-name">${challenge.sound}</span>
+        <span class="sound-desc">${challenge.transliteration}</span>
+      </div>
+      
+      <div class="bonus-options">
+        ${optionsHTML}
+      </div>
+      
+      <div class="message"></div>
+    </div>
+  `;
+  
+  // Add event listeners to option buttons
+  document.querySelectorAll('.bonus-option').forEach(button => {
+    const option = button.dataset.option;
+    button.addEventListener('click', () => handleBonusSelection(option));
+  });
+}
+// Modify renderGame function to handle bonus round display
+function renderGame() {
+  if (!gameState.active) {
+    renderStartScreen();
+  } else if (gameState.completed) {
+    renderCompletedScreen();
+  } else if (gameState.inBonusRound) {
+    renderBonusRound();
+  } else {
+    renderGameScreen();
+  }
+}
+
+// New function to render the bonus round
+function renderBonusRound() {
+  const challenge = gameState.currentBonusChallenge;
+  
+  // Create options buttons HTML
+  let optionsHTML = '';
+  challenge.options.forEach(option => {
+    optionsHTML += `
+      <button class="bonus-option" data-option="${option}">
+        ${option}
+      </button>
+    `;
+  });
+  
+  gameContainer.innerHTML = `
+    <div class="bonus-container">
+      <div class="bonus-header">
+        <h2>BONUS ROUND!</h2>
+        <div class="bonus-timer">
+          <svg viewBox="0 0 36 36">
+            <path d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="#FFF8E1"
+              stroke-width="1"
+              stroke-dasharray="100, 100"
+            />
+            <path d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="#FFEB3B"
+              stroke-width="2"
+              stroke-dasharray="${gameState.bonusTimeRemaining * 10}, 100"
+            />
+          </svg>
+          <div class="time-display">${gameState.bonusTimeRemaining}</div>
+        </div>
+      </div>
+      
+      <div class="bonus-instruction">
+        Select the correct pronunciation of this Hebrew letter
+      </div>
+      
+      <div class="bonus-nikud">
+        ${challenge.letter}
+      </div>
+      
+      <div class="bonus-sound-info">
+        <span class="sound-name">${challenge.sound}</span>
+        <span class="sound-desc">${challenge.transliteration}</span>
+      </div>
+      
+      <div class="bonus-options">
+        ${optionsHTML}
+      </div>
+      
+      <div class="message"></div>
+    </div>
+  `;
+  
+  // Add event listeners to option buttons
+  document.querySelectorAll('.bonus-option').forEach(button => {
+    const option = button.dataset.option;
+    button.addEventListener('click', () => handleBonusSelection(option));
+  });
+}
     // Game state
     let gameState = {
       active: false,
