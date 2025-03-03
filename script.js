@@ -187,6 +187,14 @@ const nikudChallenges = [
   ]
 ];
 
+// DOM Elements
+const gameContainer = document.getElementById('game-container');
+
+// Add error check
+if (!gameContainer) {
+  console.error('Could not find game-container element! Make sure your HTML has an element with id="game-container"');
+}
+
 // Game state initialization
 let gameState = {
   active: false,
@@ -1015,4 +1023,15 @@ function renderGameScreen() {
     }
 
 // Start game
-renderGame();
+document.addEventListener('DOMContentLoaded', function() {
+  // Get DOM elements after the document is ready
+  const gameContainer = document.getElementById('game-container');
+  
+  if (!gameContainer) {
+    console.error('Could not find game-container element!');
+    return;
+  }
+  
+  // Start game
+  renderGame();
+});
