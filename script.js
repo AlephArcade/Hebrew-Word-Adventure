@@ -545,7 +545,7 @@ function checkAnswer() {
     
     // Show appropriate message
     if (gameState.bonusActive) {
-      showMessage(`🔥 AWESOME! +${pointsEarned} points with streak bonus! 🔥`);
+      showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
     } else {
       showMessage(`AWESOME! +${pointsEarned} points!`);
     }
