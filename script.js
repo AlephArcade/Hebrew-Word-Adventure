@@ -38,6 +38,12 @@
         { hebrew: 'פורים', transliteration: 'purim', meaning: 'Purim holiday' },
         { hebrew: 'משלוח', transliteration: 'mishloach', meaning: 'sending (gifts)' },
         { hebrew: 'מגילה', transliteration: 'megila', meaning: 'scroll' }, 
+      ],
+      6: [
+        { hebrew: 'תחפושת', transliteration: 'tachposet', meaning: 'costume (Purim)' },
+        { hebrew: 'מורדכי', transliteration: 'mordechai', meaning: 'Mordechai (Purim)' },
+        { hebrew: 'אומנות', transliteration: 'omanut', meaning: 'art' },
+        { hebrew: 'מוזיקה', transliteration: 'muzika', meaning: 'music' },
       ]
     };
 
@@ -364,7 +370,8 @@ function checkAnswer() {
           2: [],
           3: [],
           4: [],
-          5: []
+          5: [],
+          6: []
         },
         currentLevelProgress: 0
       };
