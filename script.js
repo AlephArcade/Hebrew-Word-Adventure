@@ -52,22 +52,22 @@ const nikudChallenges = [
   [
     {
       letter: 'אָ',
-      options: ['a', 'o', 'i', 'e'],
-      correct: 'a',
+      options: ['ah', 'uh', 'eh', 'ee'],
+      correct: 'uh',
       sound: 'kamatz',
-      transliteration: 'a as in "father"'
+      transliteration: 'uh as in "sun"'
     },
     {
       letter: 'בֵּ',
-      options: ['ve', 'be', 'bi', 'ba'],
-      correct: 'be',
+      options: ['ve', 'bey', 'bah', 'buh'],
+      correct: 'bey',
       sound: 'tzere',
       transliteration: 'e as in "they"'
     },
     {
       letter: 'גִּ',
-      options: ['gi', 'ga', 'go', 'gu'],
-      correct: 'gi',
+      options: ['ghee', 'gah', 'go', 'gu'],
+      correct: 'ghee',
       sound: 'chirik',
       transliteration: 'i as in "machine"'
     }
@@ -76,24 +76,17 @@ const nikudChallenges = [
   [
     {
       letter: 'דֹּ',
-      options: ['do', 'da', 'du', 'di'],
-      correct: 'do',
+      options: ['doh', 'dah', 'duh', 'di'],
+      correct: 'doh',
       sound: 'cholam',
       transliteration: 'o as in "go"'
     },
     {
       letter: 'הֻ',
-      options: ['hu', 'hi', 'he', 'ho'],
-      correct: 'hu',
+      options: ['hoo', 'hi', 'he', 'ho'],
+      correct: 'hoo',
       sound: 'kubutz',
       transliteration: 'u as in "flute"'
-    },
-    {
-      letter: 'זְ',
-      options: ['z', 'ze', 'zi', 'zo'],
-      correct: 'z',
-      sound: 'shva',
-      transliteration: 'silent or slight "e"'
     }
   ],
   // Level 3 (harder)
@@ -107,7 +100,7 @@ const nikudChallenges = [
     },
     {
       letter: 'טוּ',
-      options: ['tu', 'ti', 'te', 'to'],
+      options: ['tu', 'ti', 'te', 'ta'],
       correct: 'tu',
       sound: 'shuruk',
       transliteration: 'u as in "flute"'
@@ -144,30 +137,30 @@ const nikudChallenges = [
       transliteration: 'o as in "go"'
     }
   ],
-  // Level 5 (more advanced — ḥătaf vowels)
-  [
-    {
-      letter: 'אֱ',
-      options: ['a', 'e', 'o', 'u'],
-      correct: 'e',
-      sound: 'ḥatef segol',
-      transliteration: 'very short “e” (ĕ)'
-    },
-    {
-      letter: 'אֲ',
-      options: ['a', 'e', 'o', 'u'],
-      correct: 'a',
-      sound: 'ḥatef patach',
-      transliteration: 'very short “a” (ă)'
-    },
-    {
-      letter: 'אֳ',
-      options: ['a', 'e', 'o', 'u'],
-      correct: 'o',
-      sound: 'ḥatef qamatz',
-      transliteration: 'very short “o” (ŏ)'
-    }
-  ],
+  // Level 5 (using common Hebrew names/words to illustrate vowel sounds)
+    [
+      {
+        letter: 'נֹ', // Using the first syllable of "Noach"
+        options: ['oh', 'ah', 'eh', 'oo'],
+        correct: 'oh',
+        sound: 'cholam',
+        transliteration: 'as in "Noach"'
+      },
+      {
+        letter: 'יָ', // The first syllable of "Adam"
+        options: ['yah', 'yeh', 'yee', 'yuh'],
+        correct: 'yah',
+        sound: 'qamatz',
+        transliteration: 'as in "Adam"'
+      },
+      {
+        letter: 'מֹ', // The first syllable of "Moshe"
+        options: ['mo', 'ma', 'me', 'mu'],
+        correct: 'mo',
+        sound: 'cholam',
+        transliteration: 'as in "Moshe"'
+      }
+    ],
   // Level 6 (even more advanced — “malei” forms)
   [
     {
@@ -189,7 +182,7 @@ const nikudChallenges = [
       options: ['o', 'a', 'e', 'u'],
       correct: 'o',
       sound: 'cholam ḥaser',
-      transliteration: 'o as in "go" (no vav written)'
+      transliteration: 'o as in "go"'
     }
   ]
 ];
@@ -351,13 +344,23 @@ function handleBonusSelection(selected) {
     
     showMessage('CORRECT! +30 points and 3 bonus hints!');
     createConfetti();
+    
+    // End the bonus round after a brief delay
+    setTimeout(() => {
+      endBonusRound(true);
+    }, 1500);
   } else {
-    showMessage('Not quite right! Let\'s continue to the next level.');
-  }
-  
-  setTimeout(() => {
-    endBonusRound(isCorrect);
-  }, 1500);
+    // Wrong answer: Show feedback with transliteration explanation and a continue button
+    gameContainer.innerHTML = `
+      <div class="bonus-feedback">
+        <p>Not quite right!</p>
+        <p>Hint: ${gameState.currentBonusChallenge.transliteration}</p>
+        <button id="continue-btn" class="primary-btn">Continue</button>
+      </div>
+    `;
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      endBonusRound(false);
+    });
 }
 
 // End the bonus round and move to the next level
@@ -377,8 +380,8 @@ function endBonusRound(wasSuccessful) {
 // New function to render the bonus round
 function renderBonusRound() {
   const challenge = gameState.currentBonusChallenge;
-  
-  // Create options buttons HTML
+
+  // Build options buttons HTML
   let optionsHTML = '';
   challenge.options.forEach(option => {
     optionsHTML += `
@@ -387,7 +390,7 @@ function renderBonusRound() {
       </button>
     `;
   });
-  
+
   gameContainer.innerHTML = `
     <div class="bonus-container">
       <div class="bonus-header">
@@ -425,7 +428,7 @@ function renderBonusRound() {
       
       <div class="bonus-sound-info">
         <span class="sound-name">${challenge.sound}</span>
-        <span class="sound-desc">${challenge.transliteration}</span>
+        <!-- Transliteration explanation is intentionally hidden here -->
       </div>
       
       <div class="bonus-options">
@@ -435,13 +438,14 @@ function renderBonusRound() {
       <div class="message"></div>
     </div>
   `;
-  
-  // Add event listeners to option buttons
+
+  // Add event listeners to bonus option buttons
   document.querySelectorAll('.bonus-option').forEach(button => {
     const option = button.dataset.option;
     button.addEventListener('click', () => handleBonusSelection(option));
   });
 }
+
 // Modify renderGame function to handle bonus round display
 function renderGame() {
   if (!gameState.active) {
