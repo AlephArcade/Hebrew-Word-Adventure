@@ -206,9 +206,7 @@ let gameState = {
     3: [],
     4: [],
     5: [],
-    6: [],
-    lives: 10, // New property for lives (10 lives = 5 hearts)
-    maxLives: 10 // Maximum number of lives
+    6: []
   },
   currentLevelProgress: 0,
   inBonusRound: false,
@@ -216,27 +214,12 @@ let gameState = {
   bonusReward: {
     extraHints: 0,
     scoreMultiplier: 1
-  }
+  },
+  lives: 10, // New property for lives (10 lives = 5 hearts)
+  maxLives: 10 // Maximum number of lives
 };
 
-// DOM Elements
-const gameContainer = document.getElementById('game-container');
-
-// Helper functions
-function shuffleArray(array) {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
-}
-
-function getWordLengthForLevel(level) {
-  return level + 1; // Level 1: 2 letters, Level 2: 3 letters, Level 3: 4 letters, Level 4: 5 letters
-}
-
-// Initialize the game
+// Fixed startGame function that properly initializes lives
 function startGame() {
   gameState = {
     active: true,
@@ -264,7 +247,9 @@ function startGame() {
     bonusReward: {
       extraHints: 0,
       scoreMultiplier: 1
-    }
+    },
+    lives: 10, // Initialize with 10 lives
+    maxLives: 10 // Maximum number of lives
   };
   
   setupWord();
