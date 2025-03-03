@@ -43,6 +43,25 @@
       grid-template-columns: 1fr 1fr 1fr;
       max-width: 100%;
     }
+    .letter-grid.six-letter {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    /* Adjust tile size for six-letter words */
+    .letter-grid.six-letter .letter-tile {
+      height: 110px;
+      font-size: 40px;
+    }
+
+    /* Make answer slots smaller on mobile when there are 6 letters */
+    @media screen and (max-width: 480px) {
+      .answer-slots:has(> .answer-slot:nth-child(6)) .answer-slot {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+      }
+    }
     
     .letter-tile {
       background-color: #FFF8E1;
