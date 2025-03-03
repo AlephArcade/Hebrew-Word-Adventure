@@ -308,6 +308,10 @@ function setupWord() {
   renderGame();
 }
 
+function getWordLengthForLevel(level) {
+  return level + 1; // Level 1: 2 letters, Level 2: 3 letters, Level 3: 4 letters, Level 4: 5 letters
+}
+
 function handleLetterSelect(index) {
   // Don't allow selection during animation
   if (gameState.animatingCorrect) return;
