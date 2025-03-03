@@ -932,10 +932,12 @@ function checkAnswer() {
         renderStartScreen();
       } else if (gameState.completed) {
         renderCompletedScreen();
+      } else if (gameState.inBonusRound) {
+        renderBonusRound();
       } else {
         renderGameScreen();
       }
     }
 
-    // Start game
-    renderGame();
+// Start game
+renderGame();
