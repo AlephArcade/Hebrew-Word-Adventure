@@ -206,7 +206,9 @@ let gameState = {
     3: [],
     4: [],
     5: [],
-    6: []
+    6: [],
+    lives: 10, // New property for lives (10 lives = 5 hearts)
+    maxLives: 10 // Maximum number of lives
   },
   currentLevelProgress: 0,
   inBonusRound: false,
@@ -404,13 +406,21 @@ function checkAnswer() {
       }
     }, 2000);
   } else {
-    // Incorrect - same as before
-    showMessage('Try again!');
-    highlightWrongSequence();
-    
-    // Reset streak on error
-    gameState.streak = 0;
-    gameState.bonusActive = false;
+   // Incorrect - reduce lives by 1 (half a heart)
+      gameState.lives = Math.max(0, gameState.lives - 1);
+      
+      // Check if game over
+      if (gameState.lives <= 0) {
+        gameOver();
+        return;
+      }
+      
+      showMessage('Try again! Lost 1 life.');
+      highlightWrongSequence();
+      
+      // Reset streak on error
+      gameState.streak = 0;
+      gameState.bonusActive = false;
     
     // Reset selection after a delay
     setTimeout(() => {
@@ -418,6 +428,23 @@ function checkAnswer() {
       renderGame();
     }, 1000);
   }
+}
+
+function gameOver() {
+  showMessage('GAME OVER!');
+  
+  setTimeout(() => {
+    gameContainer.innerHTML = `
+      <div class="game-over-screen">
+        <h1>GAME OVER</h1>
+        <p>Your final score: ${gameState.score}</p>
+        <p>Words completed: ${gameState.wordsCompleted}</p>
+        <button class="primary-btn" id="restart-btn">PLAY AGAIN</button>
+      </div>
+    `;
+    
+    document.getElementById('restart-btn').addEventListener('click', startGame);
+  }, 1500);
 }
 
 function startBonusRound() {
@@ -585,11 +612,29 @@ function resetSelection() {
   renderGame();
 }
 
+// Replace your existing getHint function with this one:
 function getHint() {
   if (gameState.hintsRemaining <= 0 || gameState.animatingCorrect) return;
   
   // Find the next letter position that needs to be filled
-  const nextLetterPosition = gameState.selectedLetters.length;
+  let nextLetterPosition = 0;
+  
+  // If the user has selected letters and they are correct, hint for the next position
+  if (gameState.selectedLetters.length > 0) {
+    // Check if the selected letters are correct so far
+    const selectedWord = gameState.selectedLetters.map(idx => gameState.shuffledLetters[idx]).join('');
+    const targetWordStart = gameState.currentWord.hebrew.substring(0, gameState.selectedLetters.length);
+    
+    if (selectedWord === targetWordStart) {
+      // Selected letters are correct, hint for the next position
+      nextLetterPosition = gameState.selectedLetters.length;
+    } else {
+      // Selected letters are incorrect, hint for the first position
+      nextLetterPosition = 0;
+      // Clear incorrect selections before showing the hint
+      gameState.selectedLetters = [];
+    }
+  }
   
   // If all letters are already selected, no hint needed
   if (nextLetterPosition >= gameState.currentWord.hebrew.length) return;
@@ -618,6 +663,92 @@ function getHint() {
   }
 }
 
+// Add this new function
+function renderLives() {
+  const totalHearts = gameState.maxLives / 2; // 5 hearts for 10 lives
+  let heartsHTML = '';
+  
+  for (let i = 0; i < totalHearts; i++) {
+    const livesForThisHeart = Math.min(2, Math.max(0, gameState.lives - (i * 2)));
+    
+    if (livesForThisHeart === 2) {
+      // Full heart
+      heartsHTML += `
+        <div class="heart full-heart">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#E91E63"/>
+          </svg>
+        </div>
+      `;
+    } else if (livesForThisHeart === 1) {
+      // Half heart
+      heartsHTML += `
+        <div class="heart half-heart">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#E91E63" opacity="0.5"/>
+            <path d="M7.5,3C4.42,3,2,5.42,2,8.5c0,3.78,3.4,6.86,8.55,11.54L12,21.35V5.09C10.91,3.81,9.24,3,7.5,3z" fill="#E91E63"/>
+          </svg>
+        </div>
+      `;
+    } else {
+      // Empty heart
+      heartsHTML += `
+        <div class="heart empty-heart">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#E91E63" stroke-width="1"/>
+          </svg>
+        </div>
+      `;
+    }
+  }
+  
+  return heartsHTML;
+}
+
+// Add this function for heart styles
+function addHeartStyles() {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    .lives-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .hearts-display {
+      display: flex;
+      justify-content: center;
+      margin-top: 5px;
+    }
+    
+    .heart {
+      width: 24px;
+      height: 24px;
+      margin: 0 3px;
+    }
+    
+    .game-over-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .game-over-screen h1 {
+      font-size: 36px;
+      color: #E91E63;
+      margin-bottom: 20px;
+    }
+  `;
+  document.head.appendChild(styleElement);
+}
+
+// Add this line at the end of your file
+document.addEventListener('DOMContentLoaded', addHeartStyles);
 function showMessage(text) {
   const messageElement = document.querySelector('.message');
   if (messageElement) {
@@ -824,6 +955,13 @@ function renderGameScreen() {
               </div>
           </div>
         </div>
+         <!-- Lives display -->
+         <div class="lives-container">
+           <div class="stat-label">LIVES</div>
+           <div class="hearts-display">
+             ${renderLives()}
+           </div>
+         </div>
          <div class="stat-item" style="width: 100%; max-width: 320px; margin-bottom: 10px;">
             <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
             <div class="progress-container">
