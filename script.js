@@ -483,6 +483,16 @@ function endBonusRound(wasSuccessful) {
   
   // Move to next level
   gameState.level += 1;
+  
+  // Check if we've reached beyond the maximum level
+  if (gameState.level > 6) {
+    // Set completed flag to true for game completion
+    gameState.completed = true;
+    renderGame(); // Show completion screen
+    return;
+  }
+  
+  // Otherwise, continue with normal level progression
   gameState.currentLevelProgress = 0;
   showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
   
