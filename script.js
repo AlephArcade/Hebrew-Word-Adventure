@@ -41,40 +41,159 @@
       ],
       6: [
         { hebrew: 'תחפושת', transliteration: 'tachposet', meaning: 'costume (Purim)' },
-        { hebrew: 'מורדכי', transliteration: 'mordechai', meaning: 'Mordechai (Purim)' },
         { hebrew: 'אומנות', transliteration: 'omanut', meaning: 'art' },
         { hebrew: 'מוזיקה', transliteration: 'muzika', meaning: 'music' },
       ]
     };
-    // Add this to your existing data in script.js
 
 // Hebrew letter + nikud combinations for bonus rounds
 const nikudChallenges = [
   // Level 1 (easy)
   [
-    { letter: 'אָ', options: ['a', 'o', 'i', 'e'], correct: 'a', sound: 'kamatz', transliteration: 'a as in "father"' },
-    { letter: 'בֵּ', options: ['ve', 'be', 'bi', 'ba'], correct: 'be', sound: 'tzere', transliteration: 'e as in "they"' },
-    { letter: 'גִּ', options: ['gi', 'ga', 'go', 'gu'], correct: 'gi', sound: 'chirik', transliteration: 'i as in "machine"' }
+    {
+      letter: 'אָ',
+      options: ['a', 'o', 'i', 'e'],
+      correct: 'a',
+      sound: 'kamatz',
+      transliteration: 'a as in "father"'
+    },
+    {
+      letter: 'בֵּ',
+      options: ['ve', 'be', 'bi', 'ba'],
+      correct: 'be',
+      sound: 'tzere',
+      transliteration: 'e as in "they"'
+    },
+    {
+      letter: 'גִּ',
+      options: ['gi', 'ga', 'go', 'gu'],
+      correct: 'gi',
+      sound: 'chirik',
+      transliteration: 'i as in "machine"'
+    }
   ],
   // Level 2 (medium)
   [
-    { letter: 'דֹּ', options: ['do', 'da', 'du', 'di'], correct: 'do', sound: 'cholam', transliteration: 'o as in "go"' },
-    { letter: 'הֻ', options: ['hu', 'hi', 'he', 'ho'], correct: 'hu', sound: 'kubutz', transliteration: 'u as in "flute"' },
-    { letter: 'זְ', options: ['z', 'ze', 'zi', 'zo'], correct: 'z', sound: 'shva', transliteration: 'silent or slight "e"' }
+    {
+      letter: 'דֹּ',
+      options: ['do', 'da', 'du', 'di'],
+      correct: 'do',
+      sound: 'cholam',
+      transliteration: 'o as in "go"'
+    },
+    {
+      letter: 'הֻ',
+      options: ['hu', 'hi', 'he', 'ho'],
+      correct: 'hu',
+      sound: 'kubutz',
+      transliteration: 'u as in "flute"'
+    },
+    {
+      letter: 'זְ',
+      options: ['z', 'ze', 'zi', 'zo'],
+      correct: 'z',
+      sound: 'shva',
+      transliteration: 'silent or slight "e"'
+    }
   ],
   // Level 3 (harder)
   [
-    { letter: 'חַ', options: ['cha', 'chi', 'chu', 'che'], correct: 'cha', sound: 'patach', transliteration: 'a as in "father"' },
-    { letter: 'טוּ', options: ['tu', 'ti', 'te', 'to'], correct: 'tu', sound: 'shuruk', transliteration: 'u as in "flute"' },
-    { letter: 'יֶ', options: ['ye', 'ya', 'yo', 'yu'], correct: 'ye', sound: 'segol', transliteration: 'e as in "set"' }
+    {
+      letter: 'חַ',
+      options: ['cha', 'chi', 'chu', 'che'],
+      correct: 'cha',
+      sound: 'patach',
+      transliteration: 'a as in "father"'
+    },
+    {
+      letter: 'טוּ',
+      options: ['tu', 'ti', 'te', 'to'],
+      correct: 'tu',
+      sound: 'shuruk',
+      transliteration: 'u as in "flute"'
+    },
+    {
+      letter: 'יֶ',
+      options: ['ye', 'ya', 'yo', 'yu'],
+      correct: 'ye',
+      sound: 'segol',
+      transliteration: 'e as in "set"'
+    }
   ],
   // Level 4 (advanced)
   [
-    { letter: 'כַּ', options: ['ka', 'ke', 'ki', 'ku'], correct: 'ka', sound: 'patach', transliteration: 'a as in "father"' },
-    { letter: 'לֹ', options: ['lo', 'la', 'li', 'lu'], correct: 'lo', sound: 'cholam', transliteration: 'o as in "go"' },
-    { letter: 'נוֹ', options: ['no', 'na', 'ni', 'nu'], correct: 'no', sound: 'cholam malei', transliteration: 'o as in "go"' }
+    {
+      letter: 'כַּ',
+      options: ['ka', 'ke', 'ki', 'ku'],
+      correct: 'ka',
+      sound: 'patach',
+      transliteration: 'a as in "father"'
+    },
+    {
+      letter: 'לֹ',
+      options: ['lo', 'la', 'li', 'lu'],
+      correct: 'lo',
+      sound: 'cholam',
+      transliteration: 'o as in "go"'
+    },
+    {
+      letter: 'נוֹ',
+      options: ['no', 'na', 'ni', 'nu'],
+      correct: 'no',
+      sound: 'cholam malei',
+      transliteration: 'o as in "go"'
+    }
+  ],
+  // Level 5 (more advanced — ḥătaf vowels)
+  [
+    {
+      letter: 'אֱ',
+      options: ['a', 'e', 'o', 'u'],
+      correct: 'e',
+      sound: 'ḥatef segol',
+      transliteration: 'very short “e” (ĕ)'
+    },
+    {
+      letter: 'אֲ',
+      options: ['a', 'e', 'o', 'u'],
+      correct: 'a',
+      sound: 'ḥatef patach',
+      transliteration: 'very short “a” (ă)'
+    },
+    {
+      letter: 'אֳ',
+      options: ['a', 'e', 'o', 'u'],
+      correct: 'o',
+      sound: 'ḥatef qamatz',
+      transliteration: 'very short “o” (ŏ)'
+    }
+  ],
+  // Level 6 (even more advanced — “malei” forms)
+  [
+    {
+      letter: 'אִי',
+      options: ['a', 'ee', 'o', 'u'],
+      correct: 'ee',
+      sound: 'chirik malei',
+      transliteration: 'ee as in "seen"'
+    },
+    {
+      letter: 'אֵי',
+      options: ['ei', 'i', 'a', 'u'],
+      correct: 'ei',
+      sound: 'tzere malei',
+      transliteration: 'ei as in "veil"'
+    },
+    {
+      letter: 'אֹ',
+      options: ['o', 'a', 'e', 'u'],
+      correct: 'o',
+      sound: 'cholam ḥaser',
+      transliteration: 'o as in "go" (no vav written)'
+    }
   ]
 ];
+
 
 // Add to gameState initialization in startGame function
 function startGame() {
@@ -161,7 +280,7 @@ function checkAnswer() {
     setTimeout(() => {
   // Check if we've completed all words at this level
   if (gameState.completedWords[wordLength].length === wordBanks[wordLength].length) {
-    if (gameState.level < 4) {
+    if (gameState.level < 5) {
       // Instead of immediately going to next level, start a bonus round
       startBonusRound();
     } else {
@@ -382,7 +501,7 @@ function renderGame() {
   // If no words left at this level
   if (availableWords.length === 0) {
     // Move to next level if available
-    if (gameState.level < 4) {
+    if (gameState.level < 5) {
       gameState.level += 1;
       gameState.currentLevelProgress = 0;
       showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
