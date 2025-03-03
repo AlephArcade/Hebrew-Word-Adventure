@@ -280,7 +280,7 @@ function checkAnswer() {
     setTimeout(() => {
   // Check if we've completed all words at this level
   if (gameState.completedWords[wordLength].length === wordBanks[wordLength].length) {
-    if (gameState.level < 5) {
+    if (gameState.level < 6) {
       // Instead of immediately going to next level, start a bonus round
       startBonusRound();
     } else {
@@ -501,7 +501,7 @@ function renderGame() {
   // If no words left at this level
   if (availableWords.length === 0) {
     // Move to next level if available
-    if (gameState.level < 5) {
+    if (gameState.level < 6) {
       gameState.level += 1;
       gameState.currentLevelProgress = 0;
       showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
