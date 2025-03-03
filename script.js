@@ -187,13 +187,8 @@ const nikudChallenges = [
   ]
 ];
 
-// DOM Elements
-const gameContainer = document.getElementById('game-container');
-
-// Add error check
-if (!gameContainer) {
-  console.error('Could not find game-container element! Make sure your HTML has an element with id="game-container"');
-}
+// Declare gameContainer as a global variable (but don't initialize it yet)
+let gameContainer;
 
 // Game state initialization
 let gameState = {
@@ -308,8 +303,19 @@ function setupWord() {
   renderGame();
 }
 
+function shuffleArray(array) {
+  // Clone the array to avoid modifying the original if needed:
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function getWordLengthForLevel(level) {
-  return level + 1; // Level 1: 2 letters, Level 2: 3 letters, Level 3: 4 letters, Level 4: 5 letters
+ // For levels 1-5, return level + 1; for level 6 or higher, return 6.
+  return level < 6 ? level + 1 : 6;
 }
 
 function handleLetterSelect(index) {
@@ -428,21 +434,23 @@ function checkAnswer() {
 }
 
 function gameOver() {
+  // Compute total words completed:
+  const totalCompleted = Object.values(gameState.completedWords).reduce((sum, arr) => sum + arr.length, 0);
   showMessage('GAME OVER!');
-  
+
   setTimeout(() => {
     gameContainer.innerHTML = `
       <div class="game-over-screen">
         <h1>GAME OVER</h1>
         <p>Your final score: ${gameState.score}</p>
-        <p>Words completed: ${gameState.wordsCompleted}</p>
+        <p>Words completed: ${totalCompleted}</p>
         <button class="primary-btn" id="restart-btn">PLAY AGAIN</button>
       </div>
     `;
-    
     document.getElementById('restart-btn').addEventListener('click', startGame);
   }, 1500);
 }
+
 
 function startBonusRound() {
   gameState.inBonusRound = true;
@@ -1028,8 +1036,11 @@ function renderGameScreen() {
 
 // Start game
 document.addEventListener('DOMContentLoaded', function() {
-  // Get DOM elements after the document is ready
-  const gameContainer = document.getElementById('game-container');
+  // Initialize the gameContainer here
+  gameContainer = document.getElementById('game-container');
+  
+  // Add heart styles
+  addHeartStyles();
   
   if (!gameContainer) {
     console.error('Could not find game-container element!');
