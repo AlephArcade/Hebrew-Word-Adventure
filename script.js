@@ -714,23 +714,33 @@ function renderLives() {
 function addHeartStyles() {
   const styleElement = document.createElement('style');
   styleElement.textContent = `
+    #game-container {
+      position: relative;
+      padding-top: 40px;
+    }
+    
     .lives-container {
+      position: absolute;
+      top: 10px;
+      right: 20px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 10px;
+      justify-content: flex-end;
+      z-index: 10;
     }
     
     .hearts-display {
       display: flex;
       justify-content: center;
-      margin-top: 5px;
     }
     
     .heart {
       width: 24px;
       height: 24px;
-      margin: 0 3px;
+      margin: 0 2px;
+    }
+    
+    .word-to-find {
+      margin-top: 5px;
     }
     
     .game-over-screen {
@@ -752,7 +762,6 @@ function addHeartStyles() {
   document.head.appendChild(styleElement);
 }
 
-// Add this line at the end of your file
 document.addEventListener('DOMContentLoaded', addHeartStyles);
 function showMessage(text) {
   const messageElement = document.querySelector('.message');
@@ -932,52 +941,55 @@ function renderGameScreen() {
         : '';
       
       // Render game screen
-      gameContainer.innerHTML = `
-        <div class="word-to-find">
-          ${gameState.currentWord.transliteration.toUpperCase()}
-        </div>
-        
-        <div class="word-meaning">
-          ${gameState.currentWord.meaning}
-        </div>
-        
-        <div class="stats-container">
-          <div class="stat-item">
-            <div class="stat-label">LEVEL</div>
-            <div class="level-badge">${gameState.level}</div>
-          </div>
-          
-          <div class="stat-item">
-            <div class="stat-label">SCORE</div>
-           <div class="stat-value">${gameState.score}</div>
-          </div>
-          
-          <div class="stat-item">
-            <div class="stat-label">STREAK</div>
-             <div class="stat-value streak-value">
-                ${streakStars}
-                ${bonusHTML}
-              </div>
-          </div>
-        </div>
-         <!-- Lives display -->
-         <div class="lives-container">
-           <div class="stat-label">LIVES</div>
-           <div class="hearts-display">
-             ${renderLives()}
+         gameContainer.innerHTML = `
+           <!-- Hearts at top right -->
+           <div class="lives-container">
+             <div class="hearts-display">
+               ${renderLives()}
+             </div>
            </div>
-         </div>
-         <div class="stat-item" style="width: 100%; max-width: 320px; margin-bottom: 10px;">
-            <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
-            <div class="progress-container">
-              <div class="progress-bar" style="width: ${progressPercentage}%"></div>
-            </div>
-          </div>
-        ${instructionsHTML}
-        
-         <div class="letter-grid ${gameState.level >= 5 ? 'six-letter' : (gameState.level >= 4 ? 'five-letter' : '')}" id="letter-grid">
-          ${letterTilesHTML}
-        </div>
+           
+           <!-- Game content starts here -->
+           <div class="word-to-find">
+             ${gameState.currentWord.transliteration.toUpperCase()}
+           </div>
+           
+           <div class="word-meaning">
+             ${gameState.currentWord.meaning}
+           </div>
+
+           <div class="stats-container">
+             <div class="stat-item">
+               <div class="stat-label">LEVEL</div>
+               <div class="level-badge">${gameState.level}</div>
+             </div>
+             
+             <div class="stat-item">
+               <div class="stat-label">SCORE</div>
+              <div class="stat-value">${gameState.score}</div>
+             </div>
+             
+             <div class="stat-item">
+               <div class="stat-label">STREAK</div>
+                <div class="stat-value streak-value">
+                   ${streakStars}
+                   ${bonusHTML}
+                 </div>
+             </div>
+           </div>
+
+           <div class="stat-item" style="width: 100%; max-width: 320px; margin-bottom: 10px;">
+             <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
+             <div class="progress-container">
+               <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+             </div>
+           </div>
+           ${instructionsHTML}
+           
+           <div class="letter-grid ${gameState.level >= 5 ? 'six-letter' : (gameState.level >= 4 ? 'five-letter' : '')}" id="letter-grid">
+             ${letterTilesHTML}
+           </div>
+
         
         <div class="answer-slots">
           ${answerSlotsHTML}
