@@ -254,65 +254,6 @@ function endBonusRound(wasSuccessful) {
   // Set up new word for the next level
   setupWord();
 }
-// New function to start the bonus round
-function startBonusRound() {
-  gameState.inBonusRound = true;
-  gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
-  
-  // Choose a random nikud challenge based on current level
-  const levelChallenges = nikudChallenges[gameState.level - 1];
-  const randomIndex = Math.floor(Math.random() * levelChallenges.length);
-  gameState.currentBonusChallenge = levelChallenges[randomIndex];
-  
-  // Start the timer
-  gameState.bonusTimer = setInterval(() => {
-    gameState.bonusTimeRemaining--;
-    if (gameState.bonusTimeRemaining <= 0) {
-      clearInterval(gameState.bonusTimer);
-      endBonusRound(false); // Timeout
-    }
-    renderGame();
-  }, 1000);
-  
-  renderGame();
-}
-
-// Handle bonus round answer selection
-function handleBonusSelection(selected) {
-  clearInterval(gameState.bonusTimer); // Stop the timer
-  
-  const isCorrect = selected === gameState.currentBonusChallenge.correct;
-  
-  if (isCorrect) {
-    // Apply rewards
-    gameState.bonusReward.extraHints += 3;
-    gameState.hintsRemaining += 3;
-    gameState.score += 30;
-    
-    showMessage('CORRECT! +30 points and 3 bonus hints!');
-    createConfetti();
-  } else {
-    showMessage('Not quite right! Let\'s continue to the next level.');
-  }
-  
-  setTimeout(() => {
-    endBonusRound(isCorrect);
-  }, 1500);
-}
-
-// End the bonus round and move to the next level
-function endBonusRound(wasSuccessful) {
-  gameState.inBonusRound = false;
-  clearInterval(gameState.bonusTimer);
-  
-  // Move to next level
-  gameState.level += 1;
-  gameState.currentLevelProgress = 0;
-  showMessage(`LEVEL UP! Now playing with ${getWordLengthForLevel(gameState.level)} letter words!`);
-  
-  // Set up new word for the next level
-  setupWord();
-}
 
 // New function to render the bonus round
 function renderBonusRound() {
