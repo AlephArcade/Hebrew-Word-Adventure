@@ -529,38 +529,24 @@
   border-color: #F44336;
   color: white;
 }
-/* Refined CSS to ensure matching widths */
+/* Fix for progress bar padding issue */
 
-.game-content-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 320px;
-  margin: 0 auto;
-}
-
-/* Stats container - keep original width */
-.stats-container {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  margin-top: 10px;
-  /* Remove any max-width here if present */
-}
-
-/* Progress wrapper should match stats container exactly */
 .progress-wrapper {
   width: 100%;
   margin-bottom: 15px;
+  background: transparent; /* Remove background from wrapper */
+  border-radius: 8px;
+  box-sizing: border-box;
+  /* Remove padding from wrapper */
+}
+
+/* Add inner container with padding */
+.progress-inner {
   background: rgba(255,255,255,0.1);
   padding: 10px;
   border-radius: 8px;
-  box-sizing: border-box; /* Important - include padding in width */
 }
 
-/* Progress container inside the wrapper */
 .progress-container {
   width: 100%;
   height: 12px;
@@ -568,7 +554,6 @@
   border-radius: 6px;
   overflow: hidden;
   margin-top: 5px;
-  box-sizing: border-box;
 }
 
 .progress-bar {
@@ -578,28 +563,29 @@
   transition: width 0.3s ease;
 }
 
-/* Make sure letter grid has the same width */
-.letter-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+/* Apply box-sizing to all elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Other styles remain the same */
+.game-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  margin-bottom: 40px;
-  box-sizing: border-box;
-  /* Remove any max-width here if present */
+  max-width: 320px;
+  margin: 0 auto;
 }
 
-/* Apply box-sizing to all relevant elements */
-.stats-container,
-.stat-item,
-.progress-wrapper,
-.progress-container,
-.letter-grid,
-.instructions {
-  box-sizing: border-box;
+.stats-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
-/* Ensure stat items have consistent width */
 .stat-item {
   display: flex;
   flex-direction: column;
@@ -607,8 +593,7 @@
   background: rgba(255,255,255,0.1);
   padding: 10px;
   border-radius: 8px;
-  width: 30%; /* Set a percentage width instead of min-width */
-  box-sizing: border-box;
+  width: 30%;
 }
 
 @keyframes bonusPulse {
