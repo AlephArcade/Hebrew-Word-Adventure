@@ -310,10 +310,12 @@ h1, h2, h3 {
 .message {
   margin-top: 15px;
   text-align: center;
-  min-height: 24px;
+  height: 24px; /* Fixed height to prevent layout shifts */
   color: #FFF8E1;
   font-weight: bold;
   font-size: 18px;
+  position: relative;
+  overflow: visible; /* Allow message to show outside the container */
 }
 
 /* Start and complete screens */
@@ -329,7 +331,7 @@ h1, h2, h3 {
 
 .start-screen h1, .complete-screen h1, .game-over-screen h1 {
   font-size: 36px;
-  color: #E91E63;
+  color: #FFF8E1;
   margin-bottom: 20px;
 }
 
@@ -337,8 +339,11 @@ h1, h2, h3 {
   width: 100%;
   text-align: center;
   color: #AAA;
+  margin-top: 20px;
   margin-bottom: 20px;
   font-size: 16px;
+  height: 20px; /* Fixed height */
+  position: relative;
 }
 
 /* Button styling */
