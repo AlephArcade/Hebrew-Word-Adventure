@@ -5,9 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hebrew Word Adventure</title>
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Add debug script before main script -->
+  <script src="debug.js"></script>
 </head>
 <body>
-  <div id="game-container"></div>
+  <div id="game-container">
+    <!-- Placeholder content in case something goes wrong -->
+    <div style="color: white; padding: 20px; text-align: center;">
+      <h2>Loading game...</h2>
+      <p>If you see this message for more than a few seconds, check the console for errors.</p>
+    </div>
+  </div>
   
   <!-- Load the main script as a module -->
   <script type="module" src="js/main.js"></script>
