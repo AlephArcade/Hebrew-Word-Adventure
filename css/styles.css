@@ -754,14 +754,18 @@ h1, h2, h3 {
   position: relative;
 }
 
+/* Updated rule - remove the finger pointer but keep other styling */
 .word-row.current-part::before {
-  content: '👉';
+  content: '';  /* Remove the finger emoji */
   position: absolute;
   right: -30px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 18px;
-  opacity: 0.8;
+}
+
+/* Since we're removing the pointer, we can also remove the extra padding */
+.answer-slots {
+  padding-right: 15px; /* Reduce from 30px */
 }
 
 /* Ensure we have proper margins to account for the indicator */
