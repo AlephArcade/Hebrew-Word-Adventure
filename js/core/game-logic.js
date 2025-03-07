@@ -1,11 +1,11 @@
 // Game logic for Hebrew Word Adventure
 
-import { wordBanks } from './data/word-data.js';
-import { gameState, getGameContainer, getWordLengthForLevel } from './core/game-state.js';
-import { shuffleArray, showMessage } from './utilities.js';
+import { wordBanks } from '../data/word-data.js';
+import { gameState, getGameContainer, getWordLengthForLevel } from './game-state.js';
+import { shuffleArray, showMessage } from '../utilities.js';
 import { showCorrectAnimation, showCorrectPartialWordAnimation, highlightWrongSequence, createConfetti } from './animations.js';
-import { renderGame } from './ui/render.js';
-import { startBonusRound, endBonusRound } from './ui/bonus-round.js';
+import { renderGame } from '../ui/render.js';
+import { startBonusRound } from '../ui/bonus-round.js';
 
 // Set up a new word for the game
 export function setupWord() {
@@ -157,8 +157,8 @@ export function checkPartialAnswer() {
 export function checkAnswer() {
   // For multi-word phrases that have already validated individual words
   if (gameState.currentWordParts.length > 1 && gameState.currentPartIndex >= gameState.currentWordParts.length) {
-    // All words have been validated, mark as complete
-    handleCorrectAnswer();
+    // All words have been validated individually, so mark as complete without additional message
+    handleCorrectAnswer(true); // Pass true to indicate this is completing a multi-word phrase
     return;
   }
   
@@ -169,7 +169,7 @@ export function checkAnswer() {
   // Check if correct
   if (selectedWord === gameState.currentWord.hebrew.replace(/\s+/g, '') || 
       selectedWord === gameState.currentWordParts[gameState.currentPartIndex]) {
-    handleCorrectAnswer();
+    handleCorrectAnswer(false); // Normal completion message
   } else {
     // Incorrect
     gameState.lives = Math.max(0, gameState.lives - 1);
@@ -196,7 +196,7 @@ export function checkAnswer() {
 }
 
 // Handle correct answer
-export function handleCorrectAnswer() {
+export function handleCorrectAnswer(skipMessage = false) {
   // Mark as animating to prevent further selection
   gameState.animatingCorrect = true;
   gameState.wordsCompleted++;
@@ -226,11 +226,14 @@ export function handleCorrectAnswer() {
   // Update bonus status after increasing streak
   gameState.bonusActive = gameState.streak >= 3;
       
-  // Show appropriate message
-  if (gameState.bonusActive) {
-    showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
-  } else {
-    showMessage(`AWESOME! +${pointsEarned} points!`);
+  // Show appropriate message if not skipping message
+  // Skip message when completing a multi-word phrase that already had messages for each word
+  if (!skipMessage) {
+    if (gameState.bonusActive) {
+      showMessage(`+${pointsEarned} points with streak bonus! 🔥`);
+    } else {
+      showMessage(`AWESOME! +${pointsEarned} points!`);
+    }
   }
       
   // Create celebration effect
@@ -286,7 +289,7 @@ export function resetSelection() {
 
 // Start the game
 export function startGame() {
-  import('./core/game-state.js').then(({ initializeGame }) => {
+  import('./game-state.js').then(({ initializeGame }) => {
     initializeGame();
     setupWord();
   });
