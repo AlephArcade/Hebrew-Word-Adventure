@@ -974,7 +974,7 @@ function renderGameScreen() {
 
   // Instructions (only on first word, but always keep the div for consistent layout)
   const instructionsHTML = gameState.wordsCompleted === 0
-    ? `<div class="instructions">Tap the letters in order to spell the Hebrew word</div>`
+    ? `<div class="instructions">Tap the letters to spell the word!</div>`
     : `<div class="instructions">&nbsp;</div>`;
     
   // Bonus indicator
