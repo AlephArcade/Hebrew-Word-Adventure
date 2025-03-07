@@ -1,8 +1,8 @@
 // Main entry point for Hebrew Word Adventure
 
 import { setGameContainer } from './core/game-state.js';
-import { renderGame } from '/ui/render.js';
-import { addHeartStyles, addMultiWordStyles, initializeDevMode } from '/utilities.js';
+import { renderGame } from '../ui/render.js';
+import { addHeartStyles, addMultiWordStyles, initializeDevMode } from '../utilities.js';
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
