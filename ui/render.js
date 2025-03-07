@@ -1,13 +1,12 @@
-// Rendering functions for Hebrew Word Adventure
-
-import { wordBanks } from '../js/data/word-data.js';
-import { gameState, getGameContainer, getWordLengthForLevel } from '../js/core/game-state.js';
-import { renderLives } from '../utilities.js';
-import { renderBonusRound } from './bonus-round.js';
-import { handleLetterSelect, resetSelection, startGame, getHint } from '../js/core/game-logic.js';
+import { wordBanks } from '/js/data/word-data.js'; // Fixed path
+import { gameState, getGameContainer, getWordLengthForLevel } from '/js/core/game-state.js'; // Fixed path
+import { renderLives } from '/utilities.js'; // Fixed path
+import { renderBonusRound } from './bonus-round.js'; // This is fine - same directory
+import { handleLetterSelect, resetSelection, startGame, getHint } from '/js/core/game-logic.js'; // Fixed path
 
 // Main rendering function that decides which screen to display
 export function renderGame() {
+  console.log('Rendering game screen, gameState.active =', gameState.active);
   if (!gameState.active) {
     renderStartScreen();
   } else if (gameState.completed) {
@@ -21,7 +20,10 @@ export function renderGame() {
 
 // Render the start screen
 function renderStartScreen() {
-  getGameContainer().innerHTML = `
+  const container = getGameContainer();
+  console.log('Rendering start screen in container:', container);
+  
+  container.innerHTML = `
     <div class="start-screen">
       <h1>Hebrew Word Adventure</h1>
       <p>Master Hebrew letters by putting them in the right order!</p>
@@ -52,8 +54,6 @@ function renderCompletedScreen() {
   document.getElementById('restart-btn').addEventListener('click', startGame);
 }
 
-// Update the renderGameScreen function in render.js to implement vertical word stacking
-
 function renderGameScreen() {
   // Calculate progress for current level
   const wordLength = getWordLengthForLevel(gameState.level);
@@ -71,29 +71,15 @@ function renderGameScreen() {
     const isSelected = gameState.selectedLetters.includes(i);
     const selectionOrder = gameState.selectedLetters.indexOf(i) + 1;
     
- // First, modify your letter tile HTML to include a uniquely identifiable class
-letterTilesHTML += `
-  <div class="letter-tile tile-${i} ${isSelected ? 'selected' : ''} ${gameState.partialWordCompleted && isSelected ? 'partial-correct-animation' : ''}" 
-       data-index="${i}">
-    ${letter}
-    ${isSelected ? `<div class="order-indicator">${selectionOrder}</div>` : ''}
-  </div>
-`;
+    letterTilesHTML += `
+      <div class="letter-tile tile-${i} ${isSelected ? 'selected' : ''} ${gameState.partialWordCompleted && isSelected ? 'partial-correct-animation' : ''}" 
+          data-index="${i}">
+        ${letter}
+        ${isSelected ? `<div class="order-indicator">${selectionOrder}</div>` : ''}
+      </div>
+    `;
+  }
 
-// Then, use a cleanup approach that leverages the cloneNode technique
-document.querySelectorAll('.letter-tile').forEach(tile => {
-  const index = parseInt(tile.dataset.index);
-  // Create a clean copy of the element without event listeners
-  const newTile = tile.cloneNode(true);
-  // Replace the old element with the new one
-  tile.parentNode.replaceChild(newTile, tile);
-  // Add fresh event listeners to the new element
-  newTile.addEventListener('click', () => handleLetterSelect(index));
-  newTile.addEventListener('touchend', (e) => {
-    e.preventDefault();
-    handleLetterSelect(index);
-  });
-});
   // Create answer slots for each part of the phrase - VERTICAL STACKING
   let answerSlotsHTML = '';
   
@@ -233,19 +219,31 @@ document.querySelectorAll('.letter-tile').forEach(tile => {
     </div>
   `;
   
-  // Add event listeners to letter tiles
-  document.querySelectorAll('.letter-tile').forEach(tile => {
-    const index = parseInt(tile.dataset.index);
-    tile.addEventListener('click', () => handleLetterSelect(index));
-    tile.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      handleLetterSelect(index);
+  // Now we can safely add event listeners after the HTML has been added to the DOM
+  // Using event delegation for better performance
+  const letterGrid = document.querySelector('.letter-grid');
+  if (letterGrid) {
+    letterGrid.addEventListener('click', (e) => {
+      const tile = e.target.closest('.letter-tile');
+      if (tile) {
+        const index = parseInt(tile.dataset.index);
+        handleLetterSelect(index);
+      }
     });
-  });
+
+    letterGrid.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      const tile = e.target.closest('.letter-tile');
+      if (tile) {
+        const index = parseInt(tile.dataset.index);
+        handleLetterSelect(index);
+      }
+    });
+  }
   
   // Add button event listeners
-  document.getElementById('reset-btn').addEventListener('click', resetSelection);
-  document.getElementById('hint-btn').addEventListener('click', getHint);
+  document.getElementById('reset-btn')?.addEventListener('click', resetSelection);
+  document.getElementById('hint-btn')?.addEventListener('click', getHint);
 }
 
 
