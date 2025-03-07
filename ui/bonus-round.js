@@ -1,11 +1,11 @@
 // Bonus round functionality for Hebrew Word Adventure
 
-import { nikudChallenges } from '../data/nikud-data.js';
-import { gameState, getGameContainer } from '../core/game-state.js';
+import { nikudChallenges } from '../js/data/nikud-data.js';
+import { gameState, getGameContainer } from '../js/core/game-state.js';
 import { shuffleArray, showMessage } from '../utilities.js';
-import { createConfetti } from '../animations.js';
+import { createConfetti } from '../js/core/animations.js';
 import { renderGame } from './render.js';
-import { setupWord } from '../core/game-logic.js';
+import { setupWord } from '../js/core/game-logic.js';
 
 // Start a bonus round
 export function startBonusRound() {
