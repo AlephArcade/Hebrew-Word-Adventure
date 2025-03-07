@@ -930,10 +930,10 @@ function renderGameScreen() {
     streakStars += `<span class="streak-star" ${!(gameState.bonusActive || i < gameState.streak) ? 'style="opacity: 0.3"' : ''}>★</span>`;
   }
 
-  // Instructions (only on first word)
+  // Instructions (only on first word, but always keep the div for consistent layout)
   const instructionsHTML = gameState.wordsCompleted === 0
     ? `<div class="instructions">Tap the letters in order to spell the Hebrew word</div>`
-    : `<div class="instructions"></div>`;
+    : `<div class="instructions">&nbsp;</div>`;
     
   // Bonus indicator
   const bonusHTML = gameState.bonusActive
@@ -995,9 +995,7 @@ function renderGameScreen() {
       <div class="answer-slots">
         ${answerSlotsHTML}
       </div>
-      
-      ${instructionsHTML}
-        
+              
       <div class="controls">
         <button class="icon-button reset-btn" id="reset-btn" title="Reset">
           <svg viewBox="0 0 24 24">
@@ -1018,6 +1016,8 @@ function renderGameScreen() {
           <div class="hint-count">${gameState.hintsRemaining}</div>
         </button>
       </div>
+      
+      ${instructionsHTML}
         
       <div class="message"></div>
     </div>
