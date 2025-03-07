@@ -339,12 +339,12 @@ h1, h2, h3 {
   width: 100%;
   text-align: center;
   color: #AAA;
-  margin-top: 5px;
+  margin-top: -20px;
   margin-bottom: 5px;
-  font-size: 16px;
-  height: 20px; /* Fixed height */
+  font-size: 15px;
+  height: 20px;
   position: relative;
-  order: 999; /* Force to appear at the bottom */
+  order: 999;
 }
 
 /* Button styling */
