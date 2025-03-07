@@ -985,9 +985,11 @@ function renderGameScreen() {
       </div>
      
       <div class="progress-wrapper">
-        <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
-        <div class="progress-container">
-          <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+        <div class="progress-inner">
+          <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+          </div>
         </div>
       </div>
       
