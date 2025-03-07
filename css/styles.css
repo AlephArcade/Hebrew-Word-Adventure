@@ -713,6 +713,62 @@ h1, h2, h3 {
   animation: glow 1.5s ease-in-out infinite alternate;
 }
 
+/* Styles for vertical word stacking in multi-word phrases */
+
+/* Updated answer slots container to use flex column for vertical stacking */
+.answer-slots {
+  display: flex;
+  flex-direction: column; /* Changed from row to column for vertical stacking */
+  align-items: center;
+  gap: 15px; /* Increased gap between words */
+  margin: 30px 0;
+}
+
+/* Word row container for each individual word in multi-word phrases */
+.word-row {
+  display: flex;
+  justify-content: center;
+  direction: rtl; /* Right to left for Hebrew */
+  gap: 8px;
+}
+
+/* Remove the word separator (hyphen) since we're using vertical stacking */
+.word-separator {
+  display: none;
+}
+
+/* Style for highlighting which word is active */
+.word-row.current-part .answer-slot {
+  border-color: #FFEB3B;
+  border-width: 2px;
+}
+
+.word-row.completed-part .answer-slot {
+  background-color: rgba(76, 175, 80, 0.3);
+  border-color: #4CAF50;
+  color: #FFF8E1;
+}
+
+/* Add an indicator for which word is active */
+.word-row {
+  position: relative;
+}
+
+.word-row.current-part::before {
+  content: '👉';
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+/* Ensure we have proper margins to account for the indicator */
+.answer-slots {
+  padding-right: 30px;
+}
+
 @keyframes flicker {
   0% { transform: scaleY(1); }
   50% { transform: scaleY(0.95); }
