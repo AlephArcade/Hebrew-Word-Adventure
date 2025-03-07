@@ -179,3 +179,213 @@ export function renderLives(lives, maxLives) {
   
   return heartsHTML;
 }
+
+// Add this to utilities.js
+
+// Secret developer mode functionality
+export function initializeDevMode() {
+  // Track clicks on the level badge for secret activation
+  let levelBadgeTaps = 0;
+  let tapTimer = null;
+  
+  // Add a global keyboard shortcut (Alt+Shift+L)
+  document.addEventListener('keydown', (e) => {
+    if (e.altKey && e.shiftKey && e.key === 'L') {
+      showLevelSelector();
+    }
+  });
+  
+  // Watch for DOM changes to attach the level badge click handler
+  const observer = new MutationObserver(mutations => {
+    const levelBadge = document.querySelector('.level-badge');
+    if (levelBadge && !levelBadge.hasAttribute('data-dev-listener')) {
+      levelBadge.setAttribute('data-dev-listener', 'true');
+      
+      // Add click handler to the level badge
+      levelBadge.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent clicks from bubbling
+        
+        levelBadgeTaps++;
+        
+        // Clear existing timer
+        if (tapTimer) clearTimeout(tapTimer);
+        
+        // Set a new timer (reset count if no taps within 1.5 seconds)
+        tapTimer = setTimeout(() => {
+          levelBadgeTaps = 0;
+        }, 1500);
+        
+        // If 5 taps detected within time window, show level selector
+        if (levelBadgeTaps >= 5) {
+          levelBadgeTaps = 0;
+          showLevelSelector();
+        }
+      });
+    }
+  });
+  
+  // Start observing the document for DOM changes
+  observer.observe(document.body, { 
+    childList: true, 
+    subtree: true 
+  });
+}
+
+// Show the level selector overlay
+function showLevelSelector() {
+  import('./core/game-state.js').then(module => {
+    const { gameState, getGameContainer } = module;
+    const { level } = gameState;
+    
+    // Create overlay container
+    const overlay = document.createElement('div');
+    overlay.className = 'dev-mode-overlay';
+    overlay.innerHTML = `
+      <div class="dev-mode-panel">
+        <h2>Developer Mode</h2>
+        <p>Current Level: ${level}</p>
+        <div class="level-buttons">
+          ${Array.from({length: 9}, (_, i) => i + 1).map(lvl => 
+            `<button class="level-btn ${lvl === level ? 'current' : ''}" data-level="${lvl}">Level ${lvl}</button>`
+          ).join('')}
+        </div>
+        <div class="dev-actions">
+          <button id="dev-close-btn">Close</button>
+          <button id="reset-progress-btn">Reset All Progress</button>
+        </div>
+      </div>
+    `;
+    
+    // Add styles inline to keep it self-contained
+    const style = document.createElement('style');
+    style.textContent = `
+      .dev-mode-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+      }
+      .dev-mode-panel {
+        background: #1E1E1E;
+        border: 2px solid #FFEB3B;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 320px;
+        color: #FFFFFF;
+      }
+      .dev-mode-panel h2 {
+        color: #FFEB3B;
+        margin-top: 0;
+        text-align: center;
+        border-bottom: 1px solid #FFEB3B;
+        padding-bottom: 10px;
+      }
+      .level-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+      }
+      .level-btn {
+        background: #333;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .level-btn.current {
+        background: #FFEB3B;
+        color: #333;
+        font-weight: bold;
+      }
+      .dev-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .dev-actions button {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #dev-close-btn {
+        background: #4CAF50;
+        color: white;
+      }
+      #reset-progress-btn {
+        background: #F44336;
+        color: white;
+      }
+    `;
+    
+    // Add to DOM
+    document.head.appendChild(style);
+    document.body.appendChild(overlay);
+    
+    // Add event listeners
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetLevel = parseInt(btn.dataset.level);
+        skipToLevel(targetLevel);
+        document.body.removeChild(overlay);
+      });
+    });
+    
+    document.getElementById('dev-close-btn').addEventListener('click', () => {
+      document.body.removeChild(overlay);
+    });
+    
+    document.getElementById('reset-progress-btn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset all progress?')) {
+        resetAllProgress();
+        document.body.removeChild(overlay);
+      }
+    });
+  });
+}
+
+// Skip to a specific level
+function skipToLevel(targetLevel) {
+  import('./core/game-state.js').then(module => {
+    const { gameState } = module;
+    import('./core/game-logic.js').then(gameLogic => {
+      // Set the level
+      gameState.level = targetLevel;
+      
+      // Clear completed words for the target level to ensure new words
+      const wordLength = targetLevel + 1;
+      gameState.completedWords[wordLength] = [];
+      
+      // Reset progress for the level
+      gameState.currentLevelProgress = 0;
+      
+      // Set up a new word at this level
+      gameLogic.setupWord();
+      
+      console.log(`Developer mode: Skipped to level ${targetLevel}`);
+    });
+  });
+}
+
+// Reset all game progress
+function resetAllProgress() {
+  import('./core/game-state.js').then(module => {
+    const { initializeGame } = module;
+    import('./core/game-logic.js').then(gameLogic => {
+      // Reset everything
+      initializeGame();
+      gameLogic.setupWord();
+      console.log('Developer mode: Reset all progress');
+    });
+  });
+}
