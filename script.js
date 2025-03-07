@@ -884,8 +884,7 @@ function renderGameScreen() {
 
   // Create HTML for letter tiles
   let letterTilesHTML = '';
-  for (let i = 0; i < gameState.shuffledLetters.length; i++) {
-    const letter = gameState.shuffledLetters[i];
+  gameState.shuffledLetters.forEach((letter, i) => {
     const isSelected = gameState.selectedLetters.includes(i);
     const selectionOrder = gameState.selectedLetters.indexOf(i) + 1;
     
@@ -895,9 +894,9 @@ function renderGameScreen() {
         ${isSelected ? `<div class="order-indicator">${selectionOrder}</div>` : ''}
       </div>
     `;
-  }
+  });
 
-  // For correct answer, we want to display the complete word in the answer slots
+  // For answer slots, we want to display the letters selected so far
   let answerSlotsHTML = '';
   let slotsContent = [];
 
@@ -917,25 +916,21 @@ function renderGameScreen() {
   }
 
   // Create the answer slots - right-to-left direction
-  for (let i = 0; i < gameState.currentWord.hebrew.length; i++) {
+  slotsContent.forEach(letter => {
     answerSlotsHTML += `
       <div class="answer-slot">
-        ${slotsContent[i]}
+        ${letter}
       </div>
     `;
-  }
+  });
 
-  // Create stats display with stars - all stars lit when streak is active
+  // Create streak stars
   let streakStars = '';
   for (let i = 0; i < 3; i++) {
-    if (gameState.bonusActive || i < gameState.streak) {
-      streakStars += `<span class="streak-star">★</span>`;
-    } else {
-      streakStars += `<span class="streak-star" style="opacity: 0.3">★</span>`;
-    }
+    streakStars += `<span class="streak-star" ${!(gameState.bonusActive || i < gameState.streak) ? 'style="opacity: 0.3"' : ''}>★</span>`;
   }
 
-  // Only show instructions on first word
+  // Instructions (only on first word)
   const instructionsHTML = gameState.wordsCompleted === 0
     ? `<div class="instructions">Tap the letters in order to spell the Hebrew word</div>`
     : '';
@@ -1028,7 +1023,7 @@ function renderGameScreen() {
     </div>
   `;
     
-  // Add touch event listeners to letter tiles
+  // Add event listeners to letter tiles
   document.querySelectorAll('.letter-tile').forEach(tile => {
     const index = parseInt(tile.dataset.index);
     tile.addEventListener('click', () => handleLetterSelect(index));
