@@ -1,24 +1,47 @@
-// Debug script for Hebrew Word Adventure
-console.log('Debug script loaded');
+// Main entry point for Hebrew Word Adventure
 
-// Test if game container exists
-const gameContainer = document.getElementById('game-container');
-console.log('Game container found:', !!gameContainer);
+import { setGameContainer } from './core/game-state.js';
+import { renderGame } from '/ui/render.js';
+import { addHeartStyles, addMultiWordStyles, initializeDevMode } from '/utilities.js';
 
-// Show any JavaScript errors
-window.addEventListener('error', function(event) {
-  console.error('JavaScript error:', event.error);
+// Initialize game when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded - initializing Hebrew Word Adventure');
   
-  // Display error on screen
-  const errorDiv = document.createElement('div');
-  errorDiv.style.color = 'red';
-  errorDiv.style.backgroundColor = 'white';
-  errorDiv.style.padding = '10px';
-  errorDiv.style.margin = '10px';
-  errorDiv.style.borderRadius = '5px';
-  errorDiv.style.fontFamily = 'monospace';
-  errorDiv.style.whiteSpace = 'pre-wrap';
-  errorDiv.textContent = `Error: ${event.error.message}\n\nStack: ${event.error.stack}`;
+  // Initialize the game container
+  const gameContainer = document.getElementById('game-container');
   
-  document.body.appendChild(errorDiv);
+  if (!gameContainer) {
+    console.error('Could not find game-container element!');
+    return;
+  }
+  
+  console.log('Setting up game container');
+  
+  try {
+    // Set up references
+    setGameContainer(gameContainer);
+    
+    // Add required styles
+    addHeartStyles();
+    addMultiWordStyles();
+    
+    // Initialize developer mode (secret level skipping)
+    initializeDevMode();
+    
+    // Start the game with the start screen
+    console.log('Rendering initial game screen');
+    renderGame();
+  } catch (error) {
+    console.error('Error initializing game:', error);
+    
+    // Display error visibly
+    gameContainer.innerHTML = `
+      <div style="color: white; padding: 20px; text-align: center;">
+        <h2>Game Initialization Error</h2>
+        <p>${error.message}</p>
+        <pre style="text-align: left; background: #222; padding: 10px; overflow: auto;">${error.stack}</pre>
+      </div>
+    `;
+  }
 });
