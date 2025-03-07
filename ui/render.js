@@ -233,3 +233,34 @@ function renderGameScreen() {
   document.getElementById('reset-btn').addEventListener('click', resetSelection);
   document.getElementById('hint-btn').addEventListener('click', getHint);
 }
+
+
+// In ui/render.js, replace the current event listener code at the end of renderGameScreen()
+// FROM:
+document.querySelectorAll('.letter-tile').forEach(tile => {
+  const index = parseInt(tile.dataset.index);
+  tile.addEventListener('click', () => handleLetterSelect(index));
+  tile.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    handleLetterSelect(index);
+  });
+});
+
+// TO:
+const letterGrid = document.querySelector('.letter-grid');
+letterGrid.addEventListener('click', (e) => {
+  const tile = e.target.closest('.letter-tile');
+  if (tile) {
+    const index = parseInt(tile.dataset.index);
+    handleLetterSelect(index);
+  }
+});
+
+letterGrid.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  const tile = e.target.closest('.letter-tile');
+  if (tile) {
+    const index = parseInt(tile.dataset.index);
+    handleLetterSelect(index);
+  }
+});
