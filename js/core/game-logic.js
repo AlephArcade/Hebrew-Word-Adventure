@@ -2,10 +2,10 @@
 
 import { wordBanks } from '../data/word-data.js';
 import { gameState, getGameContainer, getWordLengthForLevel } from './game-state.js';
-import { shuffleArray, showMessage } from '/utilities.js';
+import { shuffleArray, showMessage } from '../../utilities.js';
 import { showCorrectAnimation, showCorrectPartialWordAnimation, highlightWrongSequence, createConfetti } from './animations.js';
-import { renderGame } from '/ui/render.js';
-import { startBonusRound } from '/ui/bonus-round.js';
+import { renderGame } from '../../ui/render.js';
+import { startBonusRound } from '../../ui/bonus-round.js';
 
 // Set up a new word for the game
 export function setupWord() {
@@ -34,6 +34,8 @@ export function setupWord() {
       return;
     }
   }
+  
+  // Rest of the setupWord function...
   
   // Select random word from available words
   const randomIndex = Math.floor(Math.random() * availableWords.length);
