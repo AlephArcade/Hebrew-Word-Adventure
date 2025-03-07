@@ -1,10 +1,10 @@
 // Rendering functions for Hebrew Word Adventure
 
-import { wordBanks } from '../data/word-data.js';
-import { gameState, getGameContainer, getWordLengthForLevel } from '../core/game-state.js';
+import { wordBanks } from '../js/data/word-data.js';
+import { gameState, getGameContainer, getWordLengthForLevel } from '../js/core/game-state.js';
 import { renderLives } from '../utilities.js';
 import { renderBonusRound } from './bonus-round.js';
-import { handleLetterSelect, resetSelection, startGame, getHint } from '../core/game-logic.js';
+import { handleLetterSelect, resetSelection, startGame, getHint } from '../js/core/game-logic.js';
 
 // Main rendering function that decides which screen to display
 export function renderGame() {
