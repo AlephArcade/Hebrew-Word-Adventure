@@ -1,29 +1,24 @@
-// Main entry point for Hebrew Word Adventure
+// Debug script for Hebrew Word Adventure
+console.log('Debug script loaded');
 
-import { setGameContainer } from './core/game-state.js';
-import { renderGame } from '../ui/render.js';
-import { addHeartStyles, addMultiWordStyles, initializeDevMode } from '../utilities.js';
+// Test if game container exists
+const gameContainer = document.getElementById('game-container');
+console.log('Game container found:', !!gameContainer);
 
-// Initialize game when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize the game container
-  const gameContainer = document.getElementById('game-container');
+// Show any JavaScript errors
+window.addEventListener('error', function(event) {
+  console.error('JavaScript error:', event.error);
   
-  if (!gameContainer) {
-    console.error('Could not find game-container element!');
-    return;
-  }
+  // Display error on screen
+  const errorDiv = document.createElement('div');
+  errorDiv.style.color = 'red';
+  errorDiv.style.backgroundColor = 'white';
+  errorDiv.style.padding = '10px';
+  errorDiv.style.margin = '10px';
+  errorDiv.style.borderRadius = '5px';
+  errorDiv.style.fontFamily = 'monospace';
+  errorDiv.style.whiteSpace = 'pre-wrap';
+  errorDiv.textContent = `Error: ${event.error.message}\n\nStack: ${event.error.stack}`;
   
-  // Set up references
-  setGameContainer(gameContainer);
-  
-  // Add required styles
-  addHeartStyles();
-  addMultiWordStyles();
-  
-  // Initialize developer mode (secret level skipping)
-  initializeDevMode();
-  
-  // Start the game with the start screen
-  renderGame();
+  document.body.appendChild(errorDiv);
 });
