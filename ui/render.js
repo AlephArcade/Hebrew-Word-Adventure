@@ -52,7 +52,8 @@ function renderCompletedScreen() {
   document.getElementById('restart-btn').addEventListener('click', startGame);
 }
 
-// Render the main game screen
+// Update the renderGameScreen function in render.js to implement vertical word stacking
+
 function renderGameScreen() {
   // Calculate progress for current level
   const wordLength = getWordLengthForLevel(gameState.level);
@@ -79,19 +80,20 @@ function renderGameScreen() {
     `;
   }
 
-  // Create answer slots for each part of the phrase
+  // Create answer slots for each part of the phrase - VERTICAL STACKING
   let answerSlotsHTML = '';
   
-  // Loop through all word parts
+  // Loop through all word parts to create vertical stacking
   gameState.currentWordParts.forEach((wordPart, partIndex) => {
-    // Add a word separator for parts after the first
-    if (partIndex > 0) {
-      answerSlotsHTML += `<div class="word-separator">־</div>`;
-    }
-    
-    // Create slots for this word part
+    // Create a container for each word part
     const isCurrentPart = partIndex === gameState.currentPartIndex;
     const isCompletedPart = partIndex < gameState.currentPartIndex;
+    
+    // Add row class based on status
+    const rowClass = isCurrentPart ? 'current-part' : (isCompletedPart ? 'completed-part' : '');
+    
+    // Start the word row
+    answerSlotsHTML += `<div class="word-row ${rowClass}">`;
     
     // For each letter in this word part
     for (let i = 0; i < wordPart.length; i++) {
@@ -106,17 +108,16 @@ function renderGameScreen() {
         slotContent = gameState.shuffledLetters[selectedIndex];
       }
       
-      // Determine appropriate class
-      let slotClass = isCurrentPart ? 'current-part' : '';
-      slotClass += isCompletedPart ? ' completed-part' : '';
-      
       // Add the slot
       answerSlotsHTML += `
-        <div class="answer-slot ${slotClass}">
+        <div class="answer-slot">
           ${slotContent}
         </div>
       `;
     }
+    
+    // End the word row
+    answerSlotsHTML += `</div>`;
   });
 
   // Create streak stars
