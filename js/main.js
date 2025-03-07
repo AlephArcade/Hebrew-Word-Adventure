@@ -2,7 +2,7 @@
 
 import { setGameContainer } from './core/game-state.js';
 import { renderGame } from './ui/render.js';
-import { addHeartStyles, addMultiWordStyles } from './utilities.js';
+import { addHeartStyles, addMultiWordStyles, initializeDevMode } from './utilities.js';
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add required styles
   addHeartStyles();
   addMultiWordStyles();
+  
+  // Initialize developer mode (secret level skipping)
+  initializeDevMode();
   
   // Start the game with the start screen
   renderGame();
