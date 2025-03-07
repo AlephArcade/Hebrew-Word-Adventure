@@ -12,6 +12,8 @@ export function startBonusRound() {
   gameState.inBonusRound = true;
   gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
   
+  // Rest of the startBonusRound function...
+  
   // Choose a random nikud challenge based on current level
   // Use the current level's challenges, or level 6 challenges if level > 6
   const challengeLevel = Math.min(gameState.level - 1, nikudChallenges.length - 1);
