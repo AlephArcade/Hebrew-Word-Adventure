@@ -933,7 +933,7 @@ function renderGameScreen() {
   // Instructions (only on first word)
   const instructionsHTML = gameState.wordsCompleted === 0
     ? `<div class="instructions">Tap the letters in order to spell the Hebrew word</div>`
-    : '';
+    : `<div class="instructions"></div>`;
     
   // Bonus indicator
   const bonusHTML = gameState.bonusActive
@@ -988,8 +988,6 @@ function renderGameScreen() {
         </div>
       </div>
       
-      ${instructionsHTML}
-      
       <div class="letter-grid ${gameState.level >= 5 ? 'six-letter' : (gameState.level >= 4 ? 'five-letter' : '')}" id="letter-grid">
         ${letterTilesHTML}
       </div>
@@ -997,6 +995,8 @@ function renderGameScreen() {
       <div class="answer-slots">
         ${answerSlotsHTML}
       </div>
+      
+      ${instructionsHTML}
         
       <div class="controls">
         <button class="icon-button reset-btn" id="reset-btn" title="Reset">
