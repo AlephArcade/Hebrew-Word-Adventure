@@ -773,9 +773,12 @@ function showMessage(text) {
 function renderBonusRound() {
   const challenge = gameState.currentBonusChallenge;
 
-  // Build options buttons HTML
+  // Shuffle the options to randomize the position of the correct answer
+  const shuffledOptions = shuffleArray([...challenge.options]);
+  
+  // Build options buttons HTML with shuffled options
   let optionsHTML = '';
-  challenge.options.forEach(option => {
+  shuffledOptions.forEach(option => {
     optionsHTML += `
       <button class="bonus-option" data-option="${option}">
         ${option}
