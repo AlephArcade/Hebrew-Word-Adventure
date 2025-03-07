@@ -141,10 +141,28 @@ h1, h2, h3 {
   gap: 12px;
 }
 
+/* Multi-word grid layouts */
+.letter-grid.seven-letter {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.letter-grid.nine-letter {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
 /* Adjust tile size for six-letter words */
 .letter-grid.six-letter .letter-tile {
   height: 110px;
   font-size: 40px;
+}
+
+/* Adjust tile size for longer words */
+.letter-grid.seven-letter .letter-tile,
+.letter-grid.nine-letter .letter-tile {
+  height: 80px;
+  font-size: 32px;
 }
 
 /* Make answer slots smaller on mobile when there are 6 letters */
@@ -153,6 +171,21 @@ h1, h2, h3 {
     width: 42px;
     height: 42px;
     font-size: 20px;
+  }
+}
+
+/* For smallest screens, make slots smaller for long phrases */
+@media screen and (max-width: 360px) {
+  .answer-slots:has(> .answer-slot:nth-child(7)) .answer-slot {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+  }
+  
+  .answer-slots:has(> .answer-slot:nth-child(9)) .answer-slot {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
   }
 }
 
@@ -190,6 +223,16 @@ h1, h2, h3 {
   animation: correctPulse 0.5s ease-in-out 3;
 }
 
+.letter-tile.partial-correct-animation {
+  animation: partialPulse 1s ease-in-out forwards;
+}
+
+@keyframes partialPulse {
+  0% { transform: scale(1); opacity: 1; background-color: #4CAF50; }
+  50% { transform: scale(1.2); opacity: 0.8; background-color: #FFEB3B; }
+  100% { transform: scale(0.8); opacity: 0; background-color: #4CAF50; }
+}
+
 @keyframes correctPulse {
   0% { transform: scale(1); background-color: #4CAF50; }
   50% { transform: scale(1.1); background-color: #FFEB3B; }
@@ -211,12 +254,23 @@ h1, h2, h3 {
   font-size: 14px;
 }
 
+/* Word separator styling */
+.word-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFEB3B;
+  font-size: 24px;
+  margin: 0 5px;
+  opacity: 0.7;
+}
+
 /* Answer slot styling */
 .answer-slots {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin: 10px 0px 30px 0px;
+  margin: 30px 0;
   direction: rtl; /* Right to left for Hebrew */
 }
 
@@ -237,6 +291,18 @@ h1, h2, h3 {
   background-color: #4CAF50;
   border-color: #4CAF50;
   animation: slotPulse 0.5s ease-in-out;
+}
+
+/* Answer slot styles for multi-word phrases */
+.answer-slot.current-part {
+  border-color: #FFEB3B;
+  border-width: 2px;
+}
+
+.answer-slot.completed-part {
+  background-color: rgba(76, 175, 80, 0.3);
+  border-color: #4CAF50;
+  color: #FFF8E1;
 }
 
 @keyframes slotPulse {
@@ -316,6 +382,22 @@ h1, h2, h3 {
   font-size: 18px;
   position: relative;
   overflow: visible; /* Allow message to show outside the container */
+  padding: 0 10px;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+/* Instructions moved beneath hint button */
+.instructions {
+  width: 100%;
+  text-align: center;
+  color: #AAA;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 16px;
+  height: 20px; /* Fixed height */
+  position: relative;
+  order: 999; /* Force to appear at the bottom */
 }
 
 /* Start and complete screens */
@@ -333,18 +415,6 @@ h1, h2, h3 {
   font-size: 36px;
   color: #FFF8E1;
   margin-bottom: 20px;
-}
-
-.instructions {
-  width: 100%;
-  text-align: center;
-  color: #AAA;
-  margin-top: -20px;
-  margin-bottom: 5px;
-  font-size: 15px;
-  height: 20px;
-  position: relative;
-  order: 999;
 }
 
 /* Button styling */
