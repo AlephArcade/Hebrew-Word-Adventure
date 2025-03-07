@@ -4,7 +4,7 @@ import { wordBanks } from '../js/data/word-data.js';
 import { gameState, getGameContainer, getWordLengthForLevel } from '../js/core/game-state.js';
 import { renderLives } from '../utilities.js';
 import { renderBonusRound } from './bonus-round.js';
-import { handleLetterSelect, resetSelection, startGame } from '../js/core/game-logic.js';
+import { handleLetterSelect, resetSelection, startGame, getHint } from '../js/core/game-logic.js';
 
 // Main rendering function that decides which screen to display
 export function renderGame() {
@@ -245,17 +245,5 @@ function renderGameScreen() {
   
   // Add button event listeners
   document.getElementById('reset-btn')?.addEventListener('click', resetSelection);
-  
-  // Handle the hint button without the getHint function
-  const hintBtn = document.getElementById('hint-btn');
-  if (hintBtn) {
-    hintBtn.addEventListener('click', () => {
-      console.log("Hint button clicked, but getHint function is not available.");
-      // Show a message to the user
-      const messageElement = document.querySelector('.message');
-      if (messageElement) {
-        messageElement.textContent = "Hints are coming soon! This feature is still under development.";
-      }
-    });
-  }
+  document.getElementById('hint-btn')?.addEventListener('click', getHint);
 }
