@@ -71,15 +71,29 @@ function renderGameScreen() {
     const isSelected = gameState.selectedLetters.includes(i);
     const selectionOrder = gameState.selectedLetters.indexOf(i) + 1;
     
-    letterTilesHTML += `
-      <div class="letter-tile ${isSelected ? 'selected' : ''} ${gameState.partialWordCompleted && isSelected ? 'partial-correct-animation' : ''}" 
-           data-index="${i}">
-        ${letter}
-        ${isSelected ? `<div class="order-indicator">${selectionOrder}</div>` : ''}
-      </div>
-    `;
-  }
+ // First, modify your letter tile HTML to include a uniquely identifiable class
+letterTilesHTML += `
+  <div class="letter-tile tile-${i} ${isSelected ? 'selected' : ''} ${gameState.partialWordCompleted && isSelected ? 'partial-correct-animation' : ''}" 
+       data-index="${i}">
+    ${letter}
+    ${isSelected ? `<div class="order-indicator">${selectionOrder}</div>` : ''}
+  </div>
+`;
 
+// Then, use a cleanup approach that leverages the cloneNode technique
+document.querySelectorAll('.letter-tile').forEach(tile => {
+  const index = parseInt(tile.dataset.index);
+  // Create a clean copy of the element without event listeners
+  const newTile = tile.cloneNode(true);
+  // Replace the old element with the new one
+  tile.parentNode.replaceChild(newTile, tile);
+  // Add fresh event listeners to the new element
+  newTile.addEventListener('click', () => handleLetterSelect(index));
+  newTile.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    handleLetterSelect(index);
+  });
+});
   // Create answer slots for each part of the phrase - VERTICAL STACKING
   let answerSlotsHTML = '';
   
