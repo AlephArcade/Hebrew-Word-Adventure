@@ -452,6 +452,7 @@ function gameOver() {
 }
 
 
+// Update the startBonusRound function to randomize options once
 function startBonusRound() {
   gameState.inBonusRound = true;
   gameState.bonusTimeRemaining = 10; // 10 seconds for bonus round
@@ -460,6 +461,9 @@ function startBonusRound() {
   const levelChallenges = nikudChallenges[gameState.level - 1];
   const randomIndex = Math.floor(Math.random() * levelChallenges.length);
   gameState.currentBonusChallenge = levelChallenges[randomIndex];
+  
+  // Randomize the options once and store them in gameState
+  gameState.shuffledBonusOptions = shuffleArray([...gameState.currentBonusChallenge.options]);
   
   // Start the timer
   gameState.bonusTimer = setInterval(() => {
@@ -474,38 +478,76 @@ function startBonusRound() {
   renderGame();
 }
 
-// Handle bonus round answer selection
-function handleBonusSelection(selected) {
-  clearInterval(gameState.bonusTimer); // Stop the timer
+// Update the renderBonusRound function to use the pre-randomized options
+function renderBonusRound() {
+  const challenge = gameState.currentBonusChallenge;
   
-  const isCorrect = selected === gameState.currentBonusChallenge.correct;
+  // Use the pre-shuffled options that were randomized in startBonusRound
+  const shuffledOptions = gameState.shuffledBonusOptions;
   
-  if (isCorrect) {
-    // Apply rewards
-    gameState.bonusReward.extraHints += 3;
-    gameState.hintsRemaining += 3;
-    gameState.score += 30;
-    
-    showMessage('CORRECT! +30 points and 3 bonus hints!');
-    createConfetti();
-    
-    // End the bonus round after a brief delay
-    setTimeout(() => {
-      endBonusRound(true);
-    }, 1500);
-  } else {
-    // Wrong answer: Show feedback with transliteration explanation and a continue button
-    gameContainer.innerHTML = `
-      <div class="bonus-feedback">
-        <p>Not quite right!</p>
-        <p>Hint: ${gameState.currentBonusChallenge.transliteration}</p>
-        <button id="continue-btn" class="primary-btn">Continue</button>
-      </div>
+  // Build options buttons HTML with shuffled options
+  let optionsHTML = '';
+  shuffledOptions.forEach(option => {
+    optionsHTML += `
+      <button class="bonus-option" data-option="${option}">
+        ${option}
+      </button>
     `;
-    document.getElementById('continue-btn').addEventListener('click', () => {
-      endBonusRound(false);
-    });
-  }
+  });
+
+  gameContainer.innerHTML = `
+    <div class="bonus-container">
+      <div class="bonus-header">
+        <h2>BONUS ROUND!</h2>
+        <div class="bonus-timer">
+          <svg viewBox="0 0 36 36">
+            <path d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="#FFF8E1"
+              stroke-width="1"
+              stroke-dasharray="100, 100"
+            />
+            <path d="M18 2.0845
+              a 15.9155 15.9155 0 0 1 0 31.831
+              a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="#FFEB3B"
+              stroke-width="2"
+              stroke-dasharray="${gameState.bonusTimeRemaining * 10}, 100"
+            />
+          </svg>
+          <div class="time-display">${gameState.bonusTimeRemaining}</div>
+        </div>
+      </div>
+      
+      <div class="bonus-instruction">
+        Select the correct pronunciation of this Hebrew letter
+      </div>
+      
+      <div class="bonus-nikud">
+        ${challenge.letter}
+      </div>
+      
+      <div class="bonus-sound-info">
+        <span class="sound-name">${challenge.sound}</span>
+        <!-- Transliteration explanation is intentionally hidden here -->
+      </div>
+      
+      <div class="bonus-options">
+        ${optionsHTML}
+      </div>
+      
+      <div class="message"></div>
+    </div>
+  `;
+
+  // Add event listeners to bonus option buttons
+  document.querySelectorAll('.bonus-option').forEach(button => {
+    const option = button.dataset.option;
+    button.addEventListener('click', () => handleBonusSelection(option));
+  });
 }
 
 // End the bonus round and move to the next level
