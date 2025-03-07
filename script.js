@@ -870,6 +870,8 @@ function renderCompletedScreen() {
   document.getElementById('restart-btn').addEventListener('click', startGame);
 }
 
+// Modify the renderGameScreen function where the progress bar is created
+
 function renderGameScreen() {
   // Calculate progress for current level
   const wordLength = getWordLengthForLevel(gameState.level);
@@ -891,11 +893,11 @@ function renderGameScreen() {
       </div>
     `;
   }
-  
+
   // For correct answer, we want to display the complete word in the answer slots
   let answerSlotsHTML = '';
   let slotsContent = [];
-  
+
   if (gameState.animatingCorrect) {
     // When animating a correct answer, show the complete Hebrew word in the right order
     slotsContent = gameState.currentWord.hebrew.split('');
@@ -910,7 +912,7 @@ function renderGameScreen() {
       }
     }
   }
-  
+
   // Create the answer slots - right-to-left direction
   for (let i = 0; i < gameState.currentWord.hebrew.length; i++) {
     answerSlotsHTML += `
@@ -919,7 +921,7 @@ function renderGameScreen() {
       </div>
     `;
   }
-  
+
   // Create stats display with stars - all stars lit when streak is active
   let streakStars = '';
   for (let i = 0; i < 3; i++) {
@@ -929,110 +931,112 @@ function renderGameScreen() {
       streakStars += `<span class="streak-star" style="opacity: 0.3">★</span>`;
     }
   }
-  
+
   // Only show instructions on first word
-  const instructionsHTML = gameState.wordsCompleted === 0 
+  const instructionsHTML = gameState.wordsCompleted === 0
     ? `<div class="instructions">Tap the letters in order to spell the Hebrew word</div>`
     : '';
     
-      // Bonus indicator
-      const bonusHTML = gameState.bonusActive
-        ? `<div class="streak-bonus">x1.5</div>`
-        : '';
+  // Bonus indicator
+  const bonusHTML = gameState.bonusActive
+    ? `<div class="streak-bonus">x1.5</div>`
+    : '';
+    
+  // Render game screen
+  gameContainer.innerHTML = `
+    <!-- Hearts at top right -->
+    <div class="lives-container">
+      <div class="hearts-display">
+        ${renderLives()}
+      </div>
+    </div>
+    
+    <!-- Game content starts here -->
+    <div class="game-content-wrapper">
+      <div class="word-to-find">
+        ${gameState.currentWord.transliteration.toUpperCase()}
+      </div>
       
-      // Render game screen
-         gameContainer.innerHTML = `
-           <!-- Hearts at top right -->
-           <div class="lives-container">
-             <div class="hearts-display">
-               ${renderLives()}
-             </div>
-           </div>
-           
-           <!-- Game content starts here -->
-           <div class="word-to-find">
-             ${gameState.currentWord.transliteration.toUpperCase()}
-           </div>
-           
-           <div class="word-meaning">
-             ${gameState.currentWord.meaning}
-           </div>
-
-           <div class="stats-container">
-             <div class="stat-item">
-               <div class="stat-label">LEVEL</div>
-               <div class="level-badge">${gameState.level}</div>
-             </div>
-             
-             <div class="stat-item">
-               <div class="stat-label">SCORE</div>
-              <div class="stat-value">${gameState.score}</div>
-             </div>
-             
-             <div class="stat-item">
-               <div class="stat-label">STREAK</div>
-                <div class="stat-value streak-value">
-                   ${streakStars}
-                   ${bonusHTML}
-                 </div>
-             </div>
-           </div>
-
-           <div class="stat-item" style="width: 100%; max-width: 320px; margin-bottom: 10px;">
-             <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
-             <div class="progress-container">
-               <div class="progress-bar" style="width: ${progressPercentage}%"></div>
-             </div>
-           </div>
-           ${instructionsHTML}
-           
-           <div class="letter-grid ${gameState.level >= 5 ? 'six-letter' : (gameState.level >= 4 ? 'five-letter' : '')}" id="letter-grid">
-             ${letterTilesHTML}
-           </div>
-
-        
-        <div class="answer-slots">
-          ${answerSlotsHTML}
+      <div class="word-meaning">
+        ${gameState.currentWord.meaning}
+      </div>
+     
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-label">LEVEL</div>
+          <div class="level-badge">${gameState.level}</div>
         </div>
         
-        <div class="controls">
-          <button class="icon-button reset-btn" id="reset-btn" title="Reset">
-            <svg viewBox="0 0 24 24">
-              <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-            </svg>
-          </button>
-          
-           <button class="icon-button hint-btn ${gameState.hintsRemaining <= 0 || gameState.animatingCorrect ? 'disabled' : ''}" id="hint-btn" title="Get Hint">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 18h6"/>
-      <path d="M10 22h4"/>
-      <path d="M12 2v1"/>
-      <path d="M12 7v1"/>
-      <path d="M5.6 5.6l.7.7"/>
-      <path d="M18.4 5.6l-.7.7"/>
-      <path d="M16.5 13a4.5 4.5 0 10-9 0 4 4 0 002 3.5v1a2.5 2.5 0 005 0v-1c1.2-.8 2-2.1 2-3.5z" fill="#FFEB3B" stroke="#FFC107"/>
-    </svg>
-    <div class="hint-count">${gameState.hintsRemaining}</div>
-  </button>
+        <div class="stat-item">
+          <div class="stat-label">SCORE</div>
+          <div class="stat-value">${gameState.score}</div>
         </div>
         
-        <div class="message"></div>
-      `;
+        <div class="stat-item">
+          <div class="stat-label">STREAK</div>
+          <div class="stat-value streak-value">
+            ${streakStars}
+            ${bonusHTML}
+          </div>
+        </div>
+      </div>
+     
+      <div class="progress-wrapper">
+        <div class="stat-label">PROGRESS ${completedWordsInLevel}/${totalWordsInLevel}</div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+        </div>
+      </div>
       
-      // Add touch event listeners to letter tiles
-      document.querySelectorAll('.letter-tile').forEach(tile => {
-        const index = parseInt(tile.dataset.index);
-        tile.addEventListener('click', () => handleLetterSelect(index));
-        tile.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          handleLetterSelect(index);
-        });
-      });
+      ${instructionsHTML}
       
-      // Add button event listeners
-      document.getElementById('reset-btn').addEventListener('click', resetSelection);
-      document.getElementById('hint-btn').addEventListener('click', getHint);
-    }
+      <div class="letter-grid ${gameState.level >= 5 ? 'six-letter' : (gameState.level >= 4 ? 'five-letter' : '')}" id="letter-grid">
+        ${letterTilesHTML}
+      </div>
+         
+      <div class="answer-slots">
+        ${answerSlotsHTML}
+      </div>
+        
+      <div class="controls">
+        <button class="icon-button reset-btn" id="reset-btn" title="Reset">
+          <svg viewBox="0 0 24 24">
+            <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+          </svg>
+        </button>
+        
+        <button class="icon-button hint-btn ${gameState.hintsRemaining <= 0 || gameState.animatingCorrect ? 'disabled' : ''}" id="hint-btn" title="Get Hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18h6"/>
+            <path d="M10 22h4"/>
+            <path d="M12 2v1"/>
+            <path d="M12 7v1"/>
+            <path d="M5.6 5.6l.7.7"/>
+            <path d="M18.4 5.6l-.7.7"/>
+            <path d="M16.5 13a4.5 4.5 0 10-9 0 4 4 0 002 3.5v1a2.5 2.5 0 005 0v-1c1.2-.8 2-2.1 2-3.5z" fill="#FFEB3B" stroke="#FFC107"/>
+          </svg>
+          <div class="hint-count">${gameState.hintsRemaining}</div>
+        </button>
+      </div>
+        
+      <div class="message"></div>
+    </div>
+  `;
+    
+  // Add touch event listeners to letter tiles
+  document.querySelectorAll('.letter-tile').forEach(tile => {
+    const index = parseInt(tile.dataset.index);
+    tile.addEventListener('click', () => handleLetterSelect(index));
+    tile.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handleLetterSelect(index);
+    });
+  });
+    
+  // Add button event listeners
+  document.getElementById('reset-btn').addEventListener('click', resetSelection);
+  document.getElementById('hint-btn').addEventListener('click', getHint);
+}
 
     function renderGame() {
       if (!gameState.active) {
